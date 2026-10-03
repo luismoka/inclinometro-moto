@@ -1,0 +1,6 @@
+build/
+*.elf
+*.map
+__pycache__/
+.vscode/
+.DS_Store
