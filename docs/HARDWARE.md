@@ -18,6 +18,8 @@
 | I2C SDA | IO12 |
 | I2C SCL | IO11 |
 | Dirección I2C del sensor | `0x6B` |
+| GPS: TX del módulo | IO13 |
+| GPS: RX del módulo | IO14 |
 | Botón azul | IO0 |
 | Botón naranja | IO47 |
 | Botón verde | IO48 |

@@ -1,5 +1,12 @@
 # Historial de cambios
 
+## 0.4.0 – 2026-10-03
+
+- GPS NEO-6M: velocidad en pantalla y velocidad máxima.
+- Grabación de rutas en la memoria de la placa y descarga en CSV.
+- Página `mapa/index.html` para ver la ruta sobre el mapa.
+- Conexión opcional a la WiFi de casa (`http://motolean.local`).
+
 ## 0.3.0 – 2026-10-03
 
 - Pulsadores para la tapa, que sobresalen 3 mm.

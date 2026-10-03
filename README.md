@@ -9,8 +9,9 @@ Inclinómetro casero para moto basado en una placa **LOLIN S3 Mini Pro** (ESP32-
 - **Inclinación en directo**, con arco de color: azul hasta 25°, amarillo hasta 40°, rojo a partir de ahí.
 - **Máxima inclinación** a izquierda y derecha.
 - **Aceleración y frenada** en g, con barra en directo y máximo alcanzado.
+- **Velocidad y rutas** (con GPS): velocidad en pantalla y grabación de la ruta para verla después sobre un mapa.
 - **Memoria**: los máximos y la calibración se conservan al apagar.
-- **Móvil**: página web propia por WiFi, sin instalar ninguna app.
+- **Móvil y ordenador**: página web propia por WiFi, sin instalar ninguna app; en casa puede unirse a la WiFi doméstica.
 - **Montaje libre**: una calibración de dos pasos permite colocar la placa en cualquier posición.
 
 ## Material
@@ -18,10 +19,12 @@ Inclinómetro casero para moto basado en una placa **LOLIN S3 Mini Pro** (ESP32-
 | Pieza | Detalle |
 |---|---|
 | Placa | LOLIN (WEMOS) S3 Mini Pro v1.1.0, versión con pantalla ST7789 |
+| GPS (opcional) | Módulo GY-GPS6MV2 (NEO-6M) con antena, soldado con 4 cables |
 | Alimentación | 5 V por USB-C (toma USB de la moto) |
+| GPS, rutas y WiFi de casa | Compilado; **sin probar** con el GPS conectado |
 | Soporte | Dos piezas impresas en PETG, 4 tornillos M2 × 8–10 mm, 2 bridas de hasta 4,8 mm y una tira de goma |
 
-No hace falta ningún sensor adicional ni soldar nada.
+Sin GPS no hace falta soldar nada: el inclinómetro funciona igual, sin velocidad ni rutas.
 
 ## Puesta en marcha
 
@@ -35,6 +38,7 @@ No hace falta ningún sensor adicional ni soldar nada.
 |---|---|
 | [docs/CARGAR_FIRMWARE.md](docs/CARGAR_FIRMWARE.md) | Cómo grabar el `.bin` en la placa sin instalar nada |
 | [docs/USO.md](docs/USO.md) | Botones, calibración, pantalla y conexión con el móvil |
+| [docs/GPS_Y_RUTAS.md](docs/GPS_Y_RUTAS.md) | Conexión del GPS, grabación de rutas, mapa y WiFi de casa |
 | [docs/SOPORTE.md](docs/SOPORTE.md) | Soporte de manillar: medidas, impresión y montaje |
 | [docs/COMPILAR.md](docs/COMPILAR.md) | Cómo compilar el programa desde el código fuente |
 | [docs/FUNCIONAMIENTO.md](docs/FUNCIONAMIENTO.md) | Cómo se calcula la inclinación y qué limitaciones tiene |
@@ -48,6 +52,7 @@ firmware/
   moto_inclinometro/   Código fuente (Arduino)
   bin/                 Firmware compilado, listo para grabar
 soporte/               STL del soporte y script que los genera
+mapa/                  Página para ver una ruta grabada sobre el mapa
 herramientas/          Simulador de la pantalla (genera la imagen de arriba)
 docs/                  Documentación e imágenes
 ```

@@ -37,7 +37,7 @@ Si entre los dos pasos hay menos de unos 4° de diferencia aparece "ERROR – Po
 | MAX | Máxima a la izquierda y a la derecha |
 | Barra izquierda (FRENO) | Frenada en directo; cada segmento es 0,1 g. La raya blanca es el máximo |
 | Barra derecha (ACEL) | Aceleración en directo, igual que la anterior |
-| Cifra inferior | Aceleración longitudinal en directo (positiva acelerando, negativa frenando) |
+| Cifra inferior | Velocidad GPS en km/h, o «sin GPS». Un punto rojo al lado indica que se está grabando la ruta |
 
 ## Móvil
 
