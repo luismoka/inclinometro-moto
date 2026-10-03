@@ -27,7 +27,7 @@ Caja para llevar juntas la placa, el GPS y la antena, en dos partes: una **base*
 
 | Zona | Medidas del hueco | Contenido |
 |---|---|---|
-| Izquierda | 35,2 × 26,2 mm, 9 mm de fondo | Placa principal, con los botones a la izquierda y el USB saliendo por el lateral izquierdo |
+| Izquierda | 35,2 × 26,2 mm, 7,45 mm de fondo, con apoyos para que la placa quede recta | Placa principal, con los botones a la izquierda y el USB saliendo por el lateral izquierdo |
 | Derecha | 27 × 36 mm, 15 mm de fondo | Placa del GPS al fondo y la antena encima, pegada a la tapa |
 | Entre ambas | Paso de 12 mm | Los 4 cables del GPS |
 

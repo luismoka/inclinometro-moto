@@ -1,5 +1,10 @@
 # Historial de cambios
 
+## 0.5.1 – 2026-10-03
+
+- Las dos cajas: hueco de la placa de 9 a 7,45 mm para acercar la pantalla a la tapa, y apoyos para que la placa no quede torcida.
+- Tapas con ventana en bisel y rebaje interior para los pulsadores; pulsadores con ala de 0,8 mm.
+
 ## 0.5.0 – 2026-10-03
 
 - Caja desmontable con GPS: base fija con carril y pestaña, y módulo con placa, GPS y antena.

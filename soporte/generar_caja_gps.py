@@ -31,7 +31,8 @@ D=lambda a,l: trimesh.boolean.difference([a]+l,engine='manifold')
 RB=14.3; GOMA=0.7                 # manillar de 28,6 mm (sin medir en la moto) y holgura para goma
 TAPA=2.4
 FONDO=17.0                        # fondo del modulo sin tapa
-SUELO_PLACA=8.0                   # la placa principal apoya a 9 mm de la tapa
+HUECO_PLACA=7.45                  # USB 3,35 + placa 1,7 + cristal 1,85 + 0,5 de holgura
+SUELO_PLACA=FONDO-HUECO_PLACA
 # modulo: exterior
 U0,U1=-22.0,51.0; V0,V1=-20.4,20.4
 UC=(U0+U1)/2                      # centro del modulo: queda sobre el centro del manillar
@@ -52,13 +53,17 @@ paso_cables=B(PU-0.1,GU0+0.1,-6,6,SUELO_PLACA,FONDO+1)
 usb=B(U0-1,-15,-5.5,7.5,SUELO_PLACA-1.0,SUELO_PLACA+5.5)
 ranura=prismaV([(-CM_BOCA/2,-0.1),(CM_BOCA/2,-0.1),(CM_FONDO/2,CM_ALTO),(-CM_FONDO/2,CM_ALTO)],V0-1,CM_FIN)
 TORN=[(-19.8,-17.5),(-19.8,17.5),(48.8,-17.5),(48.8,17.5)]
-pilotos=[cylZ(0.9,7,FONDO+1,x=x,y=y) for x,y in TORN]
+pilotos=[cylZ(0.9,8,FONDO+1,x=x,y=y) for x,y in TORN]
 seguro_mod=cylX(1.7,U0-1,CM_FONDO/2+1,y=-6,z=2.6,s=32)       # agujero para tornillo M3 de seguridad
-modulo=D(ext,[cav_placa,cav_gps,paso_cables,usb,ranura,seguro_mod]+pilotos)
+# apoyos en el extremo de la pantalla, a la altura del conector USB, para que la placa quede recta
+apoyos=[B(14.4,17.7,10.2,13.2,SUELO_PLACA-0.2,SUELO_PLACA+3.4),B(14.4,17.7,-13.2,-10.2,SUELO_PLACA-0.2,SUELO_PLACA+3.4)]
+modulo=U([D(ext,[cav_placa,cav_gps,paso_cables,usb,ranura,seguro_mod]+pilotos)]+apoyos)
 
 # ---------------- tapa ----------------
+REBAJE=0.73   # rebaje interior sobre los botones para el ala de los pulsadores
+vent=trimesh.convex.convex_hull(np.array([[u,v,w] for w,e in ((FONDO-0.5,0.0),(FONDO+TAPA+0.5,2.0)) for u in (-8.5-e,8.0+e) for v in (-8.55-e,7.95+e)]))
 tapa=D(B(U0,U1,V0,V1,FONDO,FONDO+TAPA),
-       [B(-8.5,8.0,-8.55,7.95,FONDO-1,FONDO+TAPA+1)]+
+       [vent,B(-17.6,-10.9,-11,11,FONDO-0.5,FONDO+REBAJE)]+
        [cylZ(1.2,FONDO-1,FONDO+TAPA+1,x=x,y=y) for x,y in TORN]+
        [cylZ(2.5,FONDO-1,FONDO+TAPA+1,x=-14.35,y=by) for by in (7.1,0.0,-7.1)])
 
@@ -125,7 +130,7 @@ def render(objs,az,el,size=(620,560),scale=5.2,center=(0,0,30)):
 
 GRAF=(95,100,110); NAR=(235,120,30); MET=(170,175,182); VER=(30,120,70); AZ=(20,60,140); ROSA=(215,170,150); CLARO=(150,156,166)
 man=cylX(RB,-70,70)
-pcb=B(-17.25,17.25,-12.7,12.7,SUELO_PLACA+3.4,SUELO_PLACA+5.0); lcd=B(-9.06,12.3,-9.12,8.51,SUELO_PLACA+5.0,FONDO-0.3)
+pcb=B(-17.25,17.25,-12.7,12.7,SUELO_PLACA+3.4,SUELO_PLACA+5.1); lcd=B(-9.06,12.3,-9.12,8.51,SUELO_PLACA+5.1,SUELO_PLACA+6.95)
 gps=B(GU0+0.3,GU1-0.3,-17.7,17.7,SUELO_GPS,SUELO_GPS+4.0); ant=B(20.5,45.6,-12.5,12.6,SUELO_GPS+4.2,SUELO_GPS+13.2)
 def conjunto(sube=0,con_tapa=True):
     mv=lambda m: W(m.copy().apply_translation([0,sube,0]))
