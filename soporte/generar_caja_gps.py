@@ -61,7 +61,7 @@ modulo=U([D(ext,[cav_placa,cav_gps,paso_cables,usb,ranura,seguro_mod]+pilotos)]+
 
 # ---------------- tapa ----------------
 REBAJE=0.73   # rebaje interior sobre los botones para el ala de los pulsadores
-vent=trimesh.convex.convex_hull(np.array([[u,v,w] for w,e in ((FONDO-0.5,0.0),(FONDO+TAPA+0.5,2.0)) for u in (-8.5-e,8.0+e) for v in (-8.55-e,7.95+e)]))
+vent=trimesh.convex.convex_hull(np.array([[u,v,w] for w,e in ((FONDO-0.5,0.0),(FONDO+TAPA+0.5,2.0)) for u in (-9.1-e,8.6+e) for v in (-8.55-e,7.95+e)]))
 tapa=D(B(U0,U1,V0,V1,FONDO,FONDO+TAPA),
        [vent,B(-17.6,-10.9,-11,11,FONDO-0.5,FONDO+REBAJE)]+
        [cylZ(1.2,FONDO-1,FONDO+TAPA+1,x=x,y=y) for x,y in TORN]+
@@ -98,7 +98,9 @@ base=Lc(base_m)                                           # en local: carril hac
 # ---------------- exportar (cada pieza en su postura de impresion) ----------------
 def exporta(m,nombre):
     m=m.copy(); m.apply_translation([0,0,-m.bounds[0][2]]); m.export('soporte/'+nombre); return m
-exporta(modulo,'gps_modulo.stl'); exporta(tapa,'gps_tapa.stl'); exporta(base,'gps_base.stl')
+# la tapa se exporta con la cara exterior hacia la cama: el rebaje interior queda arriba y sale limpio
+tapa_imp=tapa.copy(); tapa_imp.apply_transform(rot(np.pi,[1,0,0]))
+exporta(modulo,'gps_modulo.stl'); exporta(tapa_imp,'gps_tapa.stl'); exporta(base,'gps_base.stl')
 print('estancos:',modulo.is_watertight,tapa.is_watertight,base.is_watertight,
       '| modulo',modulo.extents.round(1),'| base',base.extents.round(1))
 

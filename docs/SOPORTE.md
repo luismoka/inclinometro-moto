@@ -26,7 +26,7 @@ Soporte impreso en 3D para fijar la placa al centro del manillar con la pantalla
 | Ancho ocupado en el tubo | 34 mm |
 | Túneles para bridas | 2, para bridas de hasta 4,8 mm |
 | Hueco de la placa | 35,2 × 26,2 mm, 7,45 mm de fondo, con dos apoyos de 3,4 mm en el extremo de la pantalla |
-| Ventana de pantalla | 16,5 × 16,5 mm, centrada en la zona negra del cristal |
+| Ventana de pantalla | 17,7 × 16,5 mm por dentro, con los bordes en bisel |
 | Agujeros de botones | 3 de 5,0 mm, separados 7,1 mm y centrados en la placa |
 | Pulsadores | Vástago de 4,6 mm que sobresale 3 mm; ala interior de 6,4 × 0,8 mm |
 | Hueco del USB-C | 13 × 6,5 mm, en el lateral izquierdo |

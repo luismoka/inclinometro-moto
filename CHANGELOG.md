@@ -1,5 +1,11 @@
 # Historial de cambios
 
+## 2.0.1 – 2026-10-03
+
+- Tapas: ventana de pantalla 0,6 mm más ancha por el lado de los botones y por el opuesto, tras probar la tapa impresa.
+- Tapas exportadas con la cara exterior hacia la cama, para que el rebaje interior salga limpio.
+- Enlace de donación.
+
 ## 2.0.0 – 2026-10-03
 
 Versión que reúne todo lo añadido desde la 0.2: GPS, rutas, web ampliada y caja desmontable.

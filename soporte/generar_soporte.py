@@ -37,7 +37,7 @@ cuerpo=U([D(U([cuello,silla]),[barra,cav,usb]+tun+tornillos)]+apoyos)
 # --- tapa con ventana
 tapa0=B(-W/2,W/2,-H/2,H/2,Dp/2,Dp/2+TAPA)
 # ventana con los bordes en bisel hacia fuera, para ver la pantalla de lado
-vent=trimesh.convex.convex_hull(np.array([[u,v,w] for w,e in ((Dp/2-0.5,0.0),(Dp/2+TAPA+0.5,2.0)) for u in (-8.5-e,8.0+e) for v in (-8.55-e,7.95+e)]))
+vent=trimesh.convex.convex_hull(np.array([[u,v,w] for w,e in ((Dp/2-0.5,0.0),(Dp/2+TAPA+0.5,2.0)) for u in (-9.1-e,8.6+e) for v in (-8.55-e,7.95+e)]))
 # rebaje interior sobre los botones: deja sitio al ala de los pulsadores con la tapa pegada al cristal
 REBAJE=0.73
 rebaje=B(-17.6,-10.9,-11,11,Dp/2-0.5,Dp/2+REBAJE)
@@ -47,7 +47,8 @@ tapaL=D(tapa0,[vent,rebaje]+ag+bot)
 tapa=L(tapaL)
 cuerpo.export('soporte/soporte_cuerpo.stl')
 # tapa tumbada para imprimir
-tp=tapaL.copy(); tp.apply_translation([0,0,-Dp/2]); tp.export('soporte/soporte_tapa.stl')
+# la tapa se exporta con la cara exterior hacia la cama: el rebaje interior queda arriba y sale limpio
+tp=tapaL.copy(); tp.apply_transform(rot(np.pi,[1,0,0])); tp.apply_translation([0,0,-tp.bounds[0][2]]); tp.export('soporte/soporte_tapa.stl')
 # --- pulsadores (seta): ala por dentro de la tapa, vastago que asoma 3 mm
 # Alturas sobre la placa blanca (calibre): punta del boton 2,03, cuerpo del boton 1,55, cristal 1,85
 ALA_H=0.8; ALA_D=6.4; VAST_D=4.6; SOBRESALE=3.0; JUEGO=0.25
