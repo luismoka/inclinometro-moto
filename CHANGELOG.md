@@ -1,5 +1,9 @@
 # Historial de cambios
 
+## 0.2.1 – 2026-10-03
+
+- Tapa del soporte corregida con medidas de calibre: botones cada 7,1 mm y ventana de 16,5 mm recentrada. El cuerpo no cambia.
+
 ## 0.2.0 – 2026-10-03
 
 - Nueva pantalla: arco de inclinación con marcas de máximo y barras laterales de frenada y aceleración.

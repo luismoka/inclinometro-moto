@@ -13,7 +13,7 @@ D=lambda a,l: trimesh.boolean.difference([a]+l,engine='manifold')
 # --- parametros (mm)
 RB=14.3          # radio manillar 28.6
 GOMA=0.7         # holgura para goma
-PX,PY,PT=34.3,25.4,6.5   # placa: largo, ancho, grosor total estimado
+PX,PY,PT=34.5,25.43,6.5   # medido con calibre   # placa: largo, ancho, grosor total estimado
 W,H,Dp=44.0,32.0,11.0    # caja exterior
 TAPA=2.4
 ANG=np.radians(45); CY,CZ=-3.0,37.0
@@ -24,7 +24,7 @@ silla=B(-17,17,-14,14,3,21)
 losa=B(-17,17,-14,14,19,21)
 caja=L(B(-W/2,W/2,-H/2,H/2,-Dp/2,Dp/2))
 cuello=trimesh.convex.convex_hull(np.vstack([losa.vertices,caja.vertices]))
-cav=U([L(B(-(PX+0.9)/2,(PX+0.9)/2,-(PY+0.8)/2,(PY+0.8)/2,-Dp/2+2,Dp/2+1)),L(B(-16.5,-9,12,14.4,-Dp/2+2,Dp/2+1))])
+cav=U([L(B(-17.6,17.6,-13.1,13.1,-Dp/2+2,Dp/2+1)),L(B(-16.5,-9,12,14.4,-Dp/2+2,Dp/2+1))])
 usb=L(B(-W/2-1,-15,-5.5,7.5,-4.5,2.0))
 tornillos=[L(cylZ(0.9,-2,Dp/2+1,x=sx*19.8,y=sy*11.5)) for sx in(-1,1) for sy in(-1,1)]
 barra=cylX(RB+GOMA,-40,40)
@@ -32,9 +32,9 @@ tun=[B(x-2.9,x+2.9,-30,30,16.3,18.9) for x in(-11,11)]
 cuerpo=D(U([cuello,silla]),[barra,cav,usb]+tun+tornillos)
 # --- tapa con ventana
 tapa0=B(-W/2,W/2,-H/2,H/2,Dp/2,Dp/2+TAPA)
-vent=B(-8.35,8.65,-8.5,8.5,Dp/2-1,Dp/2+TAPA+1)
+vent=B(-8.5,8.0,-8.55,7.95,Dp/2-1,Dp/2+TAPA+1)
 ag=[cylZ(1.2,Dp/2-1,Dp/2+TAPA+1,x=sx*19.8,y=sy*11.5) for sx in(-1,1) for sy in(-1,1)]
-bot=[cylZ(2.75,Dp/2-1,Dp/2+TAPA+1,x=-13.15,y=by) for by in(9.4,1.4,-6.6)]
+bot=[cylZ(2.75,Dp/2-1,Dp/2+TAPA+1,x=-14.35,y=by) for by in(7.1,0.0,-7.1)]
 tapaL=D(tapa0,[vent]+ag+bot)
 tapa=L(tapaL)
 cuerpo.export('soporte/soporte_cuerpo.stl')
@@ -43,7 +43,7 @@ tp=tapaL.copy(); tp.apply_translation([0,0,-Dp/2]); tp.export('soporte/soporte_t
 print('estancos:',cuerpo.is_watertight,tapa.is_watertight,'| cuerpo',cuerpo.extents.round(1),'tapa',tp.extents.round(1))
 # --- piezas de ambiente para el dibujo
 pcb=L(B(-PX/2,PX/2,-PY/2,PY/2,-Dp/2+3.5,-Dp/2+5.1))
-lcd=L(B(-8.6,9.4,-9.5,9.5,-Dp/2+5.1,Dp/2-0.3))
+lcd=L(B(-9.06,12.3,-9.12,8.51,-Dp/2+5.1,Dp/2-0.3))
 man=cylX(RB,-60,60)
 # --- rasterizador simple con z-buffer
 def render(objs,az,el,size=(620,560),scale=7.0,center=(0,0,20)):

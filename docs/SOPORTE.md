@@ -24,8 +24,8 @@ Soporte impreso en 3D para fijar la placa al centro del manillar con la pantalla
 | Ancho ocupado en el tubo | 34 mm |
 | Túneles para bridas | 2, para bridas de hasta 4,8 mm |
 | Hueco de la placa | 35,2 × 26,2 mm, 9 mm de fondo |
-| Ventana de pantalla | 17 × 17 mm |
-| Agujeros de botones | 3 de 5,5 mm, separados 8 mm |
+| Ventana de pantalla | 16,5 × 16,5 mm, centrada en la zona negra del cristal |
+| Agujeros de botones | 3 de 5,5 mm, separados 7,1 mm y centrados en la placa |
 | Hueco del USB-C | 13 × 6,5 mm, en el lateral izquierdo |
 | Tornillos de la tapa | 4 × M2, agujero de 1,8 mm en el cuerpo y 2,4 mm en la tapa |
 
@@ -33,7 +33,8 @@ La placa va apaisada, con los botones a la izquierda y el cable USB saliendo por
 
 ## Medidas sin confirmar
 
-- **Ventana, botones y USB**: su posición se tomó de fotos de la placa junto a una regla, con un error de alrededor de 1 mm.
+- **Ventana y botones**: recolocados con medidas de calibre (placa de 34,50 × 25,43 mm, cristal de 17,63 × 21,38 mm, botones cada 7,1 mm). La distancia de los botones al borde (2,9 mm) sigue saliendo de fotos. Esta tapa corregida está pendiente de imprimir y probar.
+- **USB**: su posición se tomó de fotos de la placa junto a una regla, con un error de alrededor de 1 mm.
 - **Grosor de la placa**: se supone que cabe en 9 mm de fondo; el fabricante no publica ese dato.
 - **Diámetro del manillar**: se usa el valor estándar de 28,6 mm, sin medirlo en la moto.
 
