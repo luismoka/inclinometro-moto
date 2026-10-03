@@ -63,3 +63,7 @@ docs/                  Documentación e imágenes
 ## Aviso de seguridad
 
 Es un proyecto de aficionado y la medida es orientativa. No mires la pantalla en plena curva ni la uses como referencia para apurar la inclinación.
+
+## Licencia
+
+Proyecto publicado bajo licencia [MIT](LICENSE).
