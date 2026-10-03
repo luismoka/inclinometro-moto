@@ -15,6 +15,8 @@ Caja para llevar juntas la placa, el GPS y la antena, en dos partes: una **base*
 | [`soporte/gps_tapa.stl`](../soporte/gps_tapa.stl) | Tapa con ventana y agujeros de botones | Plana, sin soportes |
 | [`soporte/soporte_pulsadores_x3.stl`](../soporte/soporte_pulsadores_x3.stl) | Pulsadores | Los mismos del soporte sencillo |
 
+![Piezas a imprimir](img/caja_gps_piezas.png)
+
 ## Cómo se engancha
 
 - El módulo tiene una ranura en cola de milano en la trasera y la base un carril con la misma forma.
