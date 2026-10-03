@@ -22,7 +22,7 @@ La antena debe mirar al cielo y no tener metal encima. El NEO-6M tarda entre 30 
 
 ## LED de estado
 
-El LED de colores de la placa indica el estado del GPS. Se ve por la mirilla de 3,5 mm de la tapa, junto a la esquina superior derecha de la pantalla.
+El LED de colores de la placa indica el estado del GPS. Se ve por la mirilla de 3,5 mm de la tapa, a la derecha de la pantalla, en su mitad inferior.
 
 | Color | Significado |
 |---|---|
