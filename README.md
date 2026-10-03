@@ -58,7 +58,7 @@ docs/                  Documentación e imágenes
 |---|---|
 | Firmware | Cargado y funcionando en la placa. Pendiente de probar en marcha |
 | Pantalla nueva (arco y barras) | Cargada y funcionando en la placa |
-| Soporte | Diseñado a partir de fotos con regla; **sin imprimir todavía**, la primera tapa debe tomarse como prueba |
+| Soporte | Diseñado para la anchura de manillar calculada (tubo de 28,6 mm, sin medir en la moto) y a partir de fotos de la placa con regla; **sin imprimir todavía**, la primera tapa debe tomarse como prueba |
 
 ## Aviso de seguridad
 

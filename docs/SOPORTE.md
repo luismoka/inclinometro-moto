@@ -4,6 +4,8 @@ Soporte impreso en 3D para fijar la placa al centro del manillar con la pantalla
 
 ![Soporte](img/soporte.png)
 
+> **Medida del manillar calculada, no medida.** El soporte está dimensionado para un tubo de **28,6 mm de diámetro** (más 0,7 mm de holgura para la goma), que es el valor estándar calculado para la zona central del manillar de la Africa Twin 1100. No se ha medido sobre la moto: comprueba el diámetro con un calibre antes de imprimir y, si es distinto, cambia `RB` en `soporte/generar_soporte.py` y regenera los STL.
+
 > Las imágenes son vistas del modelo 3D. **El soporte aún no se ha impreso ni probado.** Cuando esté impreso, las fotos reales deben ir en `docs/img/`.
 
 ## Piezas
@@ -18,7 +20,7 @@ Soporte impreso en 3D para fijar la placa al centro del manillar con la pantalla
 | Elemento | Medida |
 |---|---|
 | Tamaño total | 44 × 32 × 47 mm aprox. |
-| Tubo de manillar | 28,6 mm, con 0,7 mm de holgura para una goma |
+| Tubo de manillar | 28,6 mm (valor calculado, sin medir en la moto), con 0,7 mm de holgura para una goma |
 | Ancho ocupado en el tubo | 34 mm |
 | Túneles para bridas | 2, para bridas de hasta 4,8 mm |
 | Hueco de la placa | 35,2 × 26,2 mm, 9 mm de fondo |
