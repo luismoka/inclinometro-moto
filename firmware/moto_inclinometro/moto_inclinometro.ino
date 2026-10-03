@@ -11,6 +11,7 @@
     AZUL    (IO0)  mantener 3 s  -> calibrar (2 pasos)
     NARANJA (IO47) mantener 1,5 s -> borrar maximos / pulsacion corta: confirmar
     VERDE   (IO48) pulsacion corta -> girar la pantalla 90 grados
+                   mantener 1,5 s   -> terminar la ruta y parar la grabacion (otra vez: reanudar)
 
   MOVIL: conectate a la WiFi "MotoLean" (clave moto1234) y abre http://192.168.4.1
 
@@ -26,7 +27,7 @@
 #include <ESPmDNS.h>
 #include <time.h>
 
-#define VERSION "2.2"
+#define VERSION "2.3"
 
 // ---------------- Ajustes ----------------
 const char *WIFI_NOMBRE = "MotoLean";
@@ -276,6 +277,7 @@ struct __attribute__((packed)) Reg {
 };
 
 bool fsOk = false, grabando = false;
+bool rutaPausa = false;      // grabacion parada a mano (boton verde largo o web) hasta reanudarla o apagar
 fs::File fRuta;
 char nombreRuta[40] = "";
 uint8_t sinVolcar = 0, parado = 0;
@@ -295,11 +297,18 @@ void haceSitio() {
   }
 }
 
+// Cierra la ruta en curso y la deja guardada
+void terminaRuta() {
+  if (!grabando) return;
+  fRuta.close();
+  grabando = false; nombreRuta[0] = 0; sinVolcar = 0;
+}
+
 void registra() {
   gpsNueva = false;
   if (!fsOk) return;
   if (!grabando) {
-    if (gpsKmh < 5) return;                 // la ruta empieza al echar a andar
+    if (rutaPausa || gpsKmh < 5) return;                 // la ruta empieza al echar a andar
     haceSitio();
     time_t tt = gpsUnix; struct tm *g = gmtime(&tt);
     snprintf(nombreRuta, sizeof(nombreRuta), "/r_%04d%02d%02d_%02d%02d%02d.bin",
@@ -325,8 +334,11 @@ void registra() {
 }
 
 // ---------------- LED de estado del GPS ----------------
-// Rojo: el GPS no contesta.  Amarillo: contesta pero aun no tiene posicion.
+// Rojo: el GPS no contesta.  Amarillo: contesta pero aun no tiene posicion.  Azul: grabacion parada a mano.
 // Verde: tiene posicion.     Verde con un guino cada 2 s: ademas esta grabando la ruta.
+// El LED de esta placa intercambia rojo y verde respecto a lo que envia neopixelWrite
+static void ledColor(uint8_t r, uint8_t g, uint8_t b) { neopixelWrite(LED_DATO, g, r, b); }
+
 void ledGps() {
   static uint8_t antes = 255;
   static uint32_t bytesAntes = 0, tBytes = 0;
@@ -335,13 +347,15 @@ void ledGps() {
   bool contesta = gpsBytes > 0 && ms - tBytes < 3000;
   uint8_t estado = !contesta ? 0 : (!gpsFix ? 1 : 2);
   if (estado == 2 && grabando && ms % 2000 < 150) estado = 3;      // guino
+  if (estado == 2 && rutaPausa) estado = 4;                        // grabacion parada a mano
   if (estado == antes) return;
   antes = estado;
   const uint8_t B = LED_BRILLO;
-  if (estado == 0) neopixelWrite(LED_DATO, B, 0, 0);
-  else if (estado == 1) neopixelWrite(LED_DATO, B, B / 2, 0);
-  else if (estado == 2) neopixelWrite(LED_DATO, 0, B, 0);
-  else neopixelWrite(LED_DATO, 0, 0, 0);
+  if (estado == 0) ledColor(B, 0, 0);
+  else if (estado == 1) ledColor(B, B / 2, 0);
+  else if (estado == 2) ledColor(0, B, 0);
+  else if (estado == 4) ledColor(0, 0, B);
+  else ledColor(0, 0, 0);
 }
 
 // ---------------- Pantalla ----------------
@@ -570,7 +584,7 @@ const char PAGINA[] PROGMEM = R"HTML(<!DOCTYPE html><html lang="es"><head><meta 
 <div class="c"><span>Max velocidad</span><b id="mv">-</b></div>
 <div class="c" style="grid-column:1/3"><span>Aceleracion ahora</span><b id="al">-</b></div></div>
 <p id="g" style="color:#999"></p><p><a href="/rutas" style="color:#6cf;font-size:20px">Rutas grabadas</a> &nbsp; <a href="/wifi" style="color:#6cf;font-size:20px">WiFi de casa</a> &nbsp; <a href="/gps" style="color:#6cf;font-size:20px">GPS</a></p>
-<p style="color:#666;font-size:13px">MotoLean 2.2</p>
+<p style="color:#666;font-size:13px">MotoLean 2.3</p>
 <button onclick="if(confirm('Borrar maximos?'))fetch('/reset')">Borrar maximos</button>
 <script>async function t(){try{const d=await(await fetch('/datos')).json();
 l.textContent=Math.abs(d.lean).toFixed(0)+'\u00b0';
@@ -608,6 +622,8 @@ void webRutas() {
            "<td><a href='/borrar?f=" + nom + "' onclick=\"return confirm('Borrar esta ruta?')\">Borrar</a></td></tr>";
     }
     h += F("</table>");
+    h += rutaPausa ? F("<p>Grabaci&oacute;n <b>parada</b>. <a href='/fin?r=1'>Reanudar grabaci&oacute;n</a></p>")
+                   : F("<p>Grabaci&oacute;n activa. <a href='/fin'>Terminar ruta y parar la grabaci&oacute;n</a></p>");
     if (n == 0) h += F("<p>Todavia no hay rutas. Se graban solas al circular con se&ntilde;al GPS.</p>");
     h += "<p><small>Memoria libre: " + String((LittleFS.totalBytes() - LittleFS.usedBytes()) / 1024) + " KB</small></p>";
   }
@@ -644,7 +660,7 @@ void webBorrar() {
   String f;
   if (!fsOk || !rutaValida(f)) { web.send(400, "text/plain", "ruta no valida"); return; }
   if ((String("/") + f) == nombreRuta) {      // la que se esta grabando: se cierra antes de borrarla
-    fRuta.close(); grabando = false; nombreRuta[0] = 0;
+    terminaRuta();
   }
   LittleFS.remove("/" + f);
   web.sendHeader("Location", "/rutas");
@@ -751,6 +767,12 @@ void webInicia() {
   web.on("/borrar", webBorrar);
   web.on("/wifi", webWifi);
   web.on("/gps", webGps);
+  web.on("/fin", []() {
+    rutaPausa = !web.hasArg("r");
+    if (rutaPausa) terminaRuta();
+    web.sendHeader("Location", "/rutas");
+    web.send(303, "text/plain", "");
+  });
   web.begin();
 }
 
@@ -815,6 +837,13 @@ void loop() {
     borraMaximos();
     mensaje("MAXIMOS", "borrados", "", "", TFT_GREEN);
     delay(800); tAnt = micros();
+  }
+  if (bVerde.larga) {                       // parar / reanudar la grabacion de rutas
+    rutaPausa = !rutaPausa;
+    if (rutaPausa) terminaRuta();
+    if (rutaPausa) mensaje("RUTA", "terminada", "y guardada", "VERDE 1,5 s: reanudar", TFT_GREEN);
+    else mensaje("RUTA", "grabacion", "activada", "", TFT_GREEN);
+    delay(1200); tAnt = micros();
   }
   if (bVerde.corta) {
     rotacion = (rotacion + 1) % 4;

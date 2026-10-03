@@ -30,6 +30,7 @@ El LED de colores de la placa indica el estado del GPS. Se ve por la mirilla de 
 | Amarillo | Contesta, pero aún no tiene posición |
 | Verde | Tiene posición |
 | Verde con un guiño cada 2 s | Tiene posición y está grabando la ruta |
+| Azul | Tiene posición, pero la grabación está parada a mano |
 
 El brillo se ajusta con `LED_BRILLO` al principio del código. El módulo GPS tiene además su propio LED, que parpadea una vez por segundo cuando hay posición, pero queda tapado dentro de la caja.
 
@@ -39,6 +40,7 @@ El brillo se ajusta con `LED_BRILLO` al principio del código. El módulo GPS ti
 - Se guarda un punto por segundo: hora, posición, velocidad, mayor inclinación del segundo y mayor aceleración y frenada del segundo.
 - Parado más de 5 segundos deja de guardar puntos, para no gastar memoria.
 - Cada vez que se enciende la placa se crea una ruta nueva.
+- **Terminar la ruta a mano:** mantén el botón verde 1,5 s, o pulsa «Terminar ruta» en la página de rutas. La ruta queda guardada y la grabación parada (LED azul) hasta que repitas la pulsación o apagues y enciendas.
 - Caben unas 19 horas en movimiento. Cuando falta sitio se borra la ruta más antigua.
 - Los datos se vuelcan a la memoria cada 10 segundos: si se corta la corriente se pierden como mucho esos segundos.
 

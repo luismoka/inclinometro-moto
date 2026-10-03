@@ -28,7 +28,7 @@ Datos en directo, actualizados cuatro veces por segundo:
 
 ### Rutas grabadas (`/rutas`)
 
-Lista de las rutas guardadas, con fecha y hora (UTC), minutos en movimiento y memoria libre. Cada ruta se puede **descargar** en CSV o **borrar**.
+Lista de las rutas guardadas, con fecha y hora (UTC), minutos en movimiento y memoria libre. Cada ruta se puede **descargar** en CSV o **borrar**. Un enlace permite **terminar la ruta** en curso y parar la grabación, o reanudarla.
 
 ### WiFi de casa (`/wifi`)
 

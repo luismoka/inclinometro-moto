@@ -1,5 +1,10 @@
 # Historial de cambios
 
+## 2.3.0 – 2026-10-03
+
+- Terminar la ruta a mano: botón verde mantenido 1,5 s o enlace en la página de rutas. La misma acción reanuda la grabación.
+- LED: corregidos el rojo y el verde, que salían intercambiados; azul cuando la grabación está parada a mano.
+
 ## 2.2.0 – 2026-10-03
 
 - El LED de colores de la placa indica el estado del GPS: rojo, amarillo, verde y guiño al grabar.

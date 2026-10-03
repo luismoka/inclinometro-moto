@@ -10,6 +10,7 @@ Se identifican por el color de la serigrafía de la placa.
 | Naranja (IO47) | Mantener 1,5 s | Borrar los máximos |
 | Naranja (IO47) | Corta | Confirmar cada paso de la calibración |
 | Verde (IO48) | Corta | Girar la pantalla 90° (queda guardado) |
+| Verde (IO48) | Mantener 1,5 s | Terminar la ruta y parar la grabación; otra vez para reanudarla |
 
 Durante la calibración, una pulsación corta del botón azul la cancela.
 

@@ -1,6 +1,6 @@
 # Inclinómetro para moto (MotoLean)
 
-**Versión 2.2**
+**Versión 2.3**
 
 Inclinómetro casero para moto basado en una placa **LOLIN S3 Mini Pro** (ESP32-S3 con pantalla de 0,85" y sensor de movimiento integrado) y un GPS **NEO-6M**. Muestra la inclinación, la aceleración y la velocidad, graba las rutas y las enseña después sobre un mapa.
 
