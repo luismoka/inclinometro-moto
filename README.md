@@ -57,7 +57,7 @@ docs/                  Documentación e imágenes
 | Parte | Estado |
 |---|---|
 | Firmware | Cargado y funcionando en la placa. Pendiente de probar en marcha |
-| Pantalla nueva (arco y barras) | Compilada; pendiente de revisar la colocación de textos en la pantalla real |
+| Pantalla nueva (arco y barras) | Cargada y funcionando en la placa |
 | Soporte | Diseñado a partir de fotos con regla; **sin imprimir todavía**, la primera tapa debe tomarse como prueba |
 
 ## Aviso de seguridad
