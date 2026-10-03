@@ -26,7 +26,7 @@
 #include <ESPmDNS.h>
 #include <time.h>
 
-#define VERSION "2.0"
+#define VERSION "2.1"
 
 // ---------------- Ajustes ----------------
 const char *WIFI_NOMBRE = "MotoLean";
@@ -189,6 +189,11 @@ float gpsKmh = 0;
 uint32_t gpsUnix = 0;            // hora UTC en segundos desde 1970
 char nmea[100];
 uint8_t nmeaN = 0;
+// Diagnostico: lo que llega del GPS, para verlo en /gps y por el puerto serie
+uint32_t gpsBytes = 0, gpsFrases = 0, gpsMalas = 0;
+int gpsSat = -1;
+char gpsUltimas[6][84];
+uint8_t gpsUltN = 0;
 
 double nmeaCoord(const char *v, const char *h) {
   if (!*v) return 0;
@@ -216,8 +221,16 @@ void nmeaProcesa(char *l) {
   if (!ast) return;
   uint8_t cs = 0;
   for (char *q = l + 1; q < ast; q++) cs ^= (uint8_t)*q;
-  if (cs != (uint8_t)strtol(ast + 1, NULL, 16)) return;
+  if (cs != (uint8_t)strtol(ast + 1, NULL, 16)) { gpsMalas++; return; }
+  gpsFrases++;
+  strlcpy(gpsUltimas[gpsUltN % 6], l, sizeof(gpsUltimas[0])); gpsUltN++;
+  Serial.println(l);                       // eco al puerto serie USB (115200)
   *ast = 0;
+  if (strlen(l) >= 6 && strncmp(l + 3, "GGA", 3) == 0) {   // numero de satelites
+    int coma = 0;
+    for (char *q = l; *q; q++) if (*q == ',' && ++coma == 7) { gpsSat = atoi(q + 1); break; }
+    return;
+  }
   if (strlen(l) < 6 || strncmp(l + 3, "RMC", 3) != 0) return;
 
   char *c[14]; int n = 0;
@@ -239,6 +252,7 @@ void nmeaProcesa(char *l) {
 void gpsLee() {
   while (Serial1.available()) {
     char ch = Serial1.read();
+    gpsBytes++;
     if (ch == '$') nmeaN = 0;
     if (ch == '\r' || ch == '\n') {
       if (nmeaN > 6) { nmea[nmeaN] = 0; nmeaProcesa(nmea); }
@@ -532,8 +546,8 @@ const char PAGINA[] PROGMEM = R"HTML(<!DOCTYPE html><html lang="es"><head><meta 
 <div class="c"><span>Velocidad</span><b id="v">-</b></div>
 <div class="c"><span>Max velocidad</span><b id="mv">-</b></div>
 <div class="c" style="grid-column:1/3"><span>Aceleracion ahora</span><b id="al">-</b></div></div>
-<p id="g" style="color:#999"></p><p><a href="/rutas" style="color:#6cf;font-size:20px">Rutas grabadas</a> &nbsp; <a href="/wifi" style="color:#6cf;font-size:20px">WiFi de casa</a></p>
-<p style="color:#666;font-size:13px">MotoLean 2.0</p>
+<p id="g" style="color:#999"></p><p><a href="/rutas" style="color:#6cf;font-size:20px">Rutas grabadas</a> &nbsp; <a href="/wifi" style="color:#6cf;font-size:20px">WiFi de casa</a> &nbsp; <a href="/gps" style="color:#6cf;font-size:20px">GPS</a></p>
+<p style="color:#666;font-size:13px">MotoLean 2.1</p>
 <button onclick="if(confirm('Borrar maximos?'))fetch('/reset')">Borrar maximos</button>
 <script>async function t(){try{const d=await(await fetch('/datos')).json();
 l.textContent=Math.abs(d.lean).toFixed(0)+'\u00b0';
@@ -675,6 +689,29 @@ void webWifi() {
   web.send(200, "text/html", h);
 }
 
+// Diagnostico del GPS: sirve para saber si el modulo contesta
+void webGps() {
+  String h = F("<!DOCTYPE html><html lang='es'><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'>"
+               "<meta http-equiv='refresh' content='2'><title>GPS</title><style>body{background:#111;color:#eee;font-family:sans-serif;padding:16px}"
+               "a{color:#6cf}td{padding:6px 12px 6px 0}pre{background:#000;padding:10px;overflow:auto;font-size:12px}b.ok{color:#6f6}b.mal{color:#f66}b.reg{color:#fc3}</style></head><body><h2>Diagn&oacute;stico del GPS</h2>");
+  if (gpsBytes == 0) h += F("<p><b class='mal'>No llega nada del GPS.</b> Revisa la alimentaci&oacute;n (VCC a 5V, GND a G) y que el TX del GPS va al 13.</p>");
+  else if (gpsFrases == 0) h += F("<p><b class='mal'>Llegan datos pero no se entienden.</b> Puede ser un mal contacto o un m&oacute;dulo configurado a otra velocidad.</p>");
+  else if (!gpsFix) h += F("<p><b class='reg'>El GPS contesta, pero a&uacute;n no tiene posici&oacute;n.</b> Necesita ver el cielo; puede tardar unos minutos.</p>");
+  else h += F("<p><b class='ok'>El GPS contesta y tiene posici&oacute;n.</b></p>");
+  h += "<table><tr><td>Bytes recibidos</td><td>" + String(gpsBytes) + "</td></tr>"
+       "<tr><td>Frases correctas</td><td>" + String(gpsFrases) + "</td></tr>"
+       "<tr><td>Frases con error</td><td>" + String(gpsMalas) + "</td></tr>"
+       "<tr><td>Sat&eacute;lites en uso</td><td>" + (gpsSat < 0 ? String("-") : String(gpsSat)) + "</td></tr>";
+  if (gpsFix) h += "<tr><td>Posici&oacute;n</td><td>" + String(gpsLat, 6) + ", " + String(gpsLon, 6) + "</td></tr>"
+                   "<tr><td>Velocidad</td><td>" + String(gpsKmh, 1) + " km/h</td></tr>";
+  h += F("</table><p>&Uacute;ltimas frases recibidas:</p><pre>");
+  int n = gpsUltN < 6 ? gpsUltN : 6;
+  for (int i = 0; i < n; i++) { h += gpsUltimas[(gpsUltN - n + i) % 6]; h += "\n"; }
+  if (n == 0) h += "(ninguna)";
+  h += F("</pre><p><small>La p&aacute;gina se actualiza sola cada 2 segundos.</small></p><p><a href='/'>Volver</a></p></body></html>");
+  web.send(200, "text/html", h);
+}
+
 void webInicia() {
   web.on("/", []() { web.send_P(200, "text/html", PAGINA); });
   web.on("/datos", []() {
@@ -690,12 +727,16 @@ void webInicia() {
   web.on("/ruta", webRuta);
   web.on("/borrar", webBorrar);
   web.on("/wifi", webWifi);
+  web.on("/gps", webGps);
   web.begin();
 }
 
 // ---------------- Arranque ----------------
 void setup() {
   Serial.begin(115200);
+#if ARDUINO_USB_CDC_ON_BOOT
+  Serial.setTxTimeoutMs(0);            // sin ordenador conectado, el eco no debe frenar el programa
+#endif
   bAzul.begin(); bNar.begin(); bVerde.begin();
 
   nvs.begin("moto", false);

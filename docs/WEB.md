@@ -34,6 +34,19 @@ Lista de las rutas guardadas, con fecha y hora (UTC), minutos en movimiento y me
 
 Formulario para escribir el nombre y la clave de la WiFi doméstica. Al guardar, la placa se reinicia. Dejando el nombre vacío deja de usarla. Los detalles están en [GPS_Y_RUTAS.md](GPS_Y_RUTAS.md#wifi-de-casa).
 
+### Diagnóstico del GPS (`/gps`)
+
+Dice si el módulo GPS contesta: bytes y frases recibidos, satélites en uso, posición y las últimas frases tal como llegan. Se actualiza sola cada 2 segundos.
+
+| Lo que muestra | Qué significa |
+|---|---|
+| No llega nada | Sin alimentación, o el TX del GPS no está en el 13 |
+| Llegan datos pero no se entienden | Mal contacto u otra velocidad de comunicación |
+| Contesta, sin posición | Funciona; le falta ver el cielo o más tiempo |
+| Contesta y tiene posición | Todo correcto |
+
+Las mismas frases salen también por el puerto serie USB, a 115200 baudios.
+
 ### Direcciones internas
 
 | Dirección | Qué devuelve |

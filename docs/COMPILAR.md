@@ -13,7 +13,8 @@ Solo hace falta si se quiere modificar el programa. Para usarlo tal cual basta c
    - si la placa lleva pantalla GC9A01, usa `Setup404_LOLIN_S3_MINI_PRO.h` en su lugar.
 5. Abre `firmware/moto_inclinometro/moto_inclinometro.ino`.
 6. Elige la placa **LOLIN S3 Mini** (o **LOLIN S3 Mini Pro** si tu versión del paquete la incluye) y el puerto.
-7. Pulsa **Subir**. Si no aparece el puerto, conecta la placa con el botón azul pulsado.
+7. En *Herramientas*, pon **USB CDC On Boot: Enabled** para ver el puerto serie por USB.
+8. Pulsa **Subir**. Si no aparece el puerto, conecta la placa con el botón azul pulsado.
 
 ## Entorno con el que se generó el `.bin` publicado
 
@@ -21,13 +22,13 @@ Solo hace falta si se quiere modificar el programa. Para usarlo tal cual basta c
 |---|---|
 | arduino-cli | 1.1.1 |
 | Paquete esp32 (Espressif) | 2.0.9 |
-| Placa (FQBN) | `esp32:esp32:lolin_s3_mini` |
+| Placa (FQBN) | `esp32:esp32:lolin_s3_mini:CDCOnBoot=cdc` (puerto serie por USB) |
 | TFT_eSPI (WEMOS) | 2.5.44, con `Setup406` |
 
 Comandos equivalentes:
 
 ```bash
-arduino-cli compile -b esp32:esp32:lolin_s3_mini --output-dir build firmware/moto_inclinometro
+arduino-cli compile -b esp32:esp32:lolin_s3_mini:CDCOnBoot=cdc --output-dir build firmware/moto_inclinometro
 
 esptool.py --chip esp32s3 merge_bin -o MotoLean_firmware.bin \
   --flash_mode dio --flash_freq 80m --flash_size 4MB \

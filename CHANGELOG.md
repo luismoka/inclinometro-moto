@@ -1,5 +1,10 @@
 # Historial de cambios
 
+## 2.1.0 – 2026-10-03
+
+- Página `/gps` de diagnóstico: indica si el GPS contesta, con contadores, satélites y las últimas frases recibidas.
+- Las frases del GPS salen también por el puerto serie USB (115200 baudios).
+
 ## 2.0.1 – 2026-10-03
 
 - Tapas: ventana de pantalla 0,6 mm más ancha por el lado de los botones y por el opuesto, tras probar la tapa impresa.
