@@ -1,5 +1,10 @@
 # Historial de cambios
 
+## 0.5.0 – 2026-10-03
+
+- Caja desmontable con GPS: base fija con carril y pestaña, y módulo con placa, GPS y antena.
+- Mapa: fondos de IGN y Esri.
+
 ## 0.4.0 – 2026-10-03
 
 - GPS NEO-6M: velocidad en pantalla y velocidad máxima.

@@ -22,6 +22,7 @@ Inclinómetro casero para moto basado en una placa **LOLIN S3 Mini Pro** (ESP32-
 | GPS (opcional) | Módulo GY-GPS6MV2 (NEO-6M) con antena, soldado con 4 cables |
 | Alimentación | 5 V por USB-C (toma USB de la moto) |
 | GPS, rutas y WiFi de casa | Compilado; **sin probar** con el GPS conectado |
+| Caja desmontable con GPS | Diseñada; **sin imprimir** |
 | Soporte | Dos piezas impresas en PETG, 4 tornillos M2 × 8–10 mm, 2 bridas de hasta 4,8 mm y una tira de goma |
 
 Sin GPS no hace falta soldar nada: el inclinómetro funciona igual, sin velocidad ni rutas.
@@ -40,6 +41,7 @@ Sin GPS no hace falta soldar nada: el inclinómetro funciona igual, sin velocida
 | [docs/USO.md](docs/USO.md) | Botones, calibración, pantalla y conexión con el móvil |
 | [docs/GPS_Y_RUTAS.md](docs/GPS_Y_RUTAS.md) | Conexión del GPS, grabación de rutas, mapa y WiFi de casa |
 | [docs/SOPORTE.md](docs/SOPORTE.md) | Soporte de manillar: medidas, impresión y montaje |
+| [docs/CAJA_GPS.md](docs/CAJA_GPS.md) | Caja desmontable con GPS: base fija y módulo de quita y pon |
 | [docs/COMPILAR.md](docs/COMPILAR.md) | Cómo compilar el programa desde el código fuente |
 | [docs/FUNCIONAMIENTO.md](docs/FUNCIONAMIENTO.md) | Cómo se calcula la inclinación y qué limitaciones tiene |
 | [docs/HARDWARE.md](docs/HARDWARE.md) | Pines y componentes de la placa |
