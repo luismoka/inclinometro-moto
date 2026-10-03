@@ -4,7 +4,7 @@ S=8
 F="/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf"
 def f(n): return ImageFont.truetype(F,n*S)
 BG=(0,0,0);GR=(50,54,62);WH=(255,255,255);BL=(40,140,255);CY=(0,220,255);OR=(255,140,0);GN=(60,220,90);YE=(255,210,0);RD=(255,50,40);DG=(140,146,156)
-def screen(lean,mi,md,acc,ma,mf):
+def screen(lean,mi,md,acc,ma,mf,kmh):
     im=Image.new("RGB",(128*S,128*S),BG);d=ImageDraw.Draw(im)
     R=lambda x0,y0,x1,y1,c:d.rectangle([x0*S,y0*S,x1*S,y1*S],fill=c)
     T=lambda s,x,y,n,c,a="mm":d.text((x*S,y*S),s,font=f(n),fill=c,anchor=a)
@@ -36,10 +36,10 @@ def screen(lean,mi,md,acc,ma,mf):
     T("FRENO",2,13,7,OR,"lm"); T("ACEL",126,13,7,GN,"rm")
     T(f"{mf:.2f}",2,98,8,OR,"lm"); T(f"{ma:.2f}",126,98,8,GN,"rm")
     T("g max",2,107,6,DG,"lm"); T("g max",126,107,6,DG,"rm")
-    T(f"{acc:+.2f} g",cx,120,9,WH)
+    T(f"{kmh} km/h",cx+4,120,9,WH); d.ellipse([(cx-34)*S,117*S,(cx-28)*S,123*S],fill=RD)   # punto rojo = grabando ruta
     im=im.resize((128,128),Image.LANCZOS).resize((384,384),Image.NEAREST)
     return im
-cs=[screen(0,41,38,0.0,0.45,0.72),screen(32,41,38,0.21,0.45,0.72),screen(-44,44,38,-0.55,0.45,0.72)]
+cs=[screen(0,41,38,0.0,0.45,0.72,96),screen(32,41,38,0.21,0.45,0.72,74),screen(-44,44,38,-0.55,0.45,0.72,58)]
 out=Image.new("RGB",(3*384+4*24,384+48),(28,30,34))
 for i,c in enumerate(cs): out.paste(c,(24+i*408,24))
 out.save("docs/img/pantalla.png")

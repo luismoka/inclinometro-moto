@@ -1,5 +1,32 @@
 # Historial de cambios
 
+## 2.0.0 – 2026-10-03
+
+Versión que reúne todo lo añadido desde la 0.2: GPS, rutas, web ampliada y caja desmontable.
+
+Firmware:
+
+- GPS NEO-6M: velocidad en pantalla (sustituye a la aceleración en directo) y velocidad máxima.
+- Grabación automática de rutas en la memoria de la placa, un punto por segundo, con unas 19 horas de capacidad.
+- Web: páginas de rutas (descarga en CSV y borrado) y de WiFi de casa; velocidad y estado del GPS en la página de inicio.
+- Conexión opcional a la WiFi doméstica, con acceso por `http://motolean.local`.
+- El número de versión aparece al arrancar y en la web.
+
+Mapa:
+
+- Página `mapa/index.html` para ver una ruta: trazado por inclinación o velocidad, marcas de frenadas y acelerones, resumen y tres fondos de mapa.
+
+Cajas:
+
+- Caja desmontable con GPS: base fija con carril en cola de milano y pestaña, módulo con placa, GPS y antena, y seguro opcional con tornillo M3.
+- Pulsadores para la tapa, que sobresalen 3 mm.
+- Tapas y huecos ajustados con medidas de calibre: botones cada 7,1 mm, pantalla a 0,5 mm de la tapa, apoyos para que la placa quede recta y ventana en bisel.
+
+Documentación:
+
+- Nuevos: `MATERIALES.md`, `WEB.md`, `GPS_Y_RUTAS.md` y `CAJA_GPS.md`.
+- README reorganizado.
+
 ## 0.5.1 – 2026-10-03
 
 - Las dos cajas: hueco de la placa de 9 a 7,45 mm para acercar la pantalla a la tapa, y apoyos para que la placa no quede torcida.

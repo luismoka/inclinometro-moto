@@ -26,6 +26,8 @@
 #include <ESPmDNS.h>
 #include <time.h>
 
+#define VERSION "2.0"
+
 // ---------------- Ajustes ----------------
 const char *WIFI_NOMBRE = "MotoLean";
 const char *WIFI_CLAVE  = "moto1234";      // minimo 8 caracteres
@@ -531,6 +533,7 @@ const char PAGINA[] PROGMEM = R"HTML(<!DOCTYPE html><html lang="es"><head><meta 
 <div class="c"><span>Max velocidad</span><b id="mv">-</b></div>
 <div class="c" style="grid-column:1/3"><span>Aceleracion ahora</span><b id="al">-</b></div></div>
 <p id="g" style="color:#999"></p><p><a href="/rutas" style="color:#6cf;font-size:20px">Rutas grabadas</a> &nbsp; <a href="/wifi" style="color:#6cf;font-size:20px">WiFi de casa</a></p>
+<p style="color:#666;font-size:13px">MotoLean 2.0</p>
 <button onclick="if(confirm('Borrar maximos?'))fetch('/reset')">Borrar maximos</button>
 <script>async function t(){try{const d=await(await fetch('/datos')).json();
 l.textContent=Math.abs(d.lean).toFixed(0)+'\u00b0';
@@ -722,7 +725,7 @@ void setup() {
   webInicia();
 
   // Al encender: si la moto esta quieta, afinamos el cero del giroscopio
-  mensaje("MotoLean", "Arrancando...", "", "WiFi: MotoLean", TFT_GREEN);
+  mensaje("MotoLean " VERSION, "Arrancando...", "", "WiFi: MotoLean", TFT_GREEN);
   V3 a, g;
   float movimiento = imuMedia(1000, a, g);
   if (movimiento < 3.0f) biasGiro = g;

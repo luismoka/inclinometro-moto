@@ -37,7 +37,7 @@ esptool.py --chip esp32s3 merge_bin -o MotoLean_firmware.bin \
   0x10000 build/moto_inclinometro.ino.bin
 ```
 
-No hacen falta más librerías: el sensor se lee directamente por I2C y el resto (WiFi, WebServer, Preferences, Wire) viene con el paquete esp32.
+No hacen falta más librerías: el sensor y el GPS se leen directamente, y el resto (WiFi, WebServer, Preferences, LittleFS, ESPmDNS, Wire) viene con el paquete esp32.
 
 ## Ajustes rápidos en el código
 

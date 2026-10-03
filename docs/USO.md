@@ -39,7 +39,9 @@ Si entre los dos pasos hay menos de unos 4° de diferencia aparece "ERROR – Po
 | Barra derecha (ACEL) | Aceleración en directo, igual que la anterior |
 | Cifra inferior | Velocidad GPS en km/h, o «sin GPS». Un punto rojo al lado indica que se está grabando la ruta |
 
-## Móvil
+## Web
+
+Las páginas de la placa y la del mapa se explican en [WEB.md](WEB.md). Para entrar desde el móvil:
 
 1. Conéctate a la WiFi **`MotoLean`** (clave `moto1234`).
 2. Abre <http://192.168.4.1> en el navegador.
