@@ -64,6 +64,7 @@ REBAJE=0.73   # rebaje interior sobre los botones para el ala de los pulsadores
 vent=trimesh.convex.convex_hull(np.array([[u,v,w] for w,e in ((FONDO-0.5,0.0),(FONDO+TAPA+0.5,2.0)) for u in (-9.1-e,8.6+e) for v in (-8.55-e,7.95+e)]))
 tapa=D(B(U0,U1,V0,V1,FONDO,FONDO+TAPA),
        [vent,B(-17.6,-10.9,-11,11,FONDO-0.5,FONDO+REBAJE)]+
+       [cylZ(1.75,FONDO-1,FONDO+TAPA+1,x=16.0,y=-6.8)]+      # mirilla del LED de estado del GPS
        [cylZ(1.2,FONDO-1,FONDO+TAPA+1,x=x,y=y) for x,y in TORN]+
        [cylZ(2.5,FONDO-1,FONDO+TAPA+1,x=-14.35,y=by) for by in (7.1,0.0,-7.1)])
 

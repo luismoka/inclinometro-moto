@@ -26,7 +26,7 @@
 #include <ESPmDNS.h>
 #include <time.h>
 
-#define VERSION "2.1"
+#define VERSION "2.2"
 
 // ---------------- Ajustes ----------------
 const char *WIFI_NOMBRE = "MotoLean";
@@ -39,6 +39,9 @@ const char *WIFI_CLAVE  = "moto1234";      // minimo 8 caracteres
 #define BTN_NAR   47
 #define BTN_VERDE 48
 #define IMU_ADDR  0x6B
+#define LED_DATO  8      // LED de colores de la placa
+#define LED_POWER 7
+#define LED_BRILLO 40    // 0-255
 
 const float LEAN_MIN_REG = 8.0f;    // por debajo de esto no se registra como maximo
 const float LEAN_MAX_REG = 70.0f;   // por encima se descarta (caida / lectura falsa)
@@ -321,6 +324,26 @@ void registra() {
   sLean = lean; sAMax = sAMin = accLong;
 }
 
+// ---------------- LED de estado del GPS ----------------
+// Rojo: el GPS no contesta.  Amarillo: contesta pero aun no tiene posicion.
+// Verde: tiene posicion.     Verde con un guino cada 2 s: ademas esta grabando la ruta.
+void ledGps() {
+  static uint8_t antes = 255;
+  static uint32_t bytesAntes = 0, tBytes = 0;
+  uint32_t ms = millis();
+  if (gpsBytes != bytesAntes) { bytesAntes = gpsBytes; tBytes = ms; }
+  bool contesta = gpsBytes > 0 && ms - tBytes < 3000;
+  uint8_t estado = !contesta ? 0 : (!gpsFix ? 1 : 2);
+  if (estado == 2 && grabando && ms % 2000 < 150) estado = 3;      // guino
+  if (estado == antes) return;
+  antes = estado;
+  const uint8_t B = LED_BRILLO;
+  if (estado == 0) neopixelWrite(LED_DATO, B, 0, 0);
+  else if (estado == 1) neopixelWrite(LED_DATO, B, B / 2, 0);
+  else if (estado == 2) neopixelWrite(LED_DATO, 0, B, 0);
+  else neopixelWrite(LED_DATO, 0, 0, 0);
+}
+
 // ---------------- Pantalla ----------------
 void mensaje(const char *l1, const char *l2 = "", const char *l3 = "", const char *l4 = "", uint16_t color = TFT_YELLOW) {
   spr.fillSprite(TFT_BLACK);
@@ -547,7 +570,7 @@ const char PAGINA[] PROGMEM = R"HTML(<!DOCTYPE html><html lang="es"><head><meta 
 <div class="c"><span>Max velocidad</span><b id="mv">-</b></div>
 <div class="c" style="grid-column:1/3"><span>Aceleracion ahora</span><b id="al">-</b></div></div>
 <p id="g" style="color:#999"></p><p><a href="/rutas" style="color:#6cf;font-size:20px">Rutas grabadas</a> &nbsp; <a href="/wifi" style="color:#6cf;font-size:20px">WiFi de casa</a> &nbsp; <a href="/gps" style="color:#6cf;font-size:20px">GPS</a></p>
-<p style="color:#666;font-size:13px">MotoLean 2.1</p>
+<p style="color:#666;font-size:13px">MotoLean 2.2</p>
 <button onclick="if(confirm('Borrar maximos?'))fetch('/reset')">Borrar maximos</button>
 <script>async function t(){try{const d=await(await fetch('/datos')).json();
 l.textContent=Math.abs(d.lean).toFixed(0)+'\u00b0';
@@ -758,6 +781,7 @@ void setup() {
     while (true) delay(1000);
   }
 
+  pinMode(LED_POWER, OUTPUT); digitalWrite(LED_POWER, HIGH);
   Serial1.begin(9600, SERIAL_8N1, GPS_RX, GPS_TX);
   fsOk = LittleFS.begin(true);          // la primera vez da formato a la memoria de rutas
 
@@ -800,6 +824,7 @@ void loop() {
 
   gpsLee();
   if (gpsNueva) registra();
+  ledGps();
 
   web.handleClient();
   wifiCasaVigila();

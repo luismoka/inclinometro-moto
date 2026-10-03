@@ -43,7 +43,8 @@ REBAJE=0.73
 rebaje=B(-17.6,-10.9,-11,11,Dp/2-0.5,Dp/2+REBAJE)
 ag=[cylZ(1.2,Dp/2-1,Dp/2+TAPA+1,x=sx*19.8,y=sy*11.5) for sx in(-1,1) for sy in(-1,1)]
 bot=[cylZ(2.5,Dp/2-1,Dp/2+TAPA+1,x=-14.35,y=by) for by in(7.1,0.0,-7.1)]
-tapaL=D(tapa0,[vent,rebaje]+ag+bot)
+mirilla=cylZ(1.75,Dp/2-1,Dp/2+TAPA+1,x=16.0,y=-6.8)   # mirilla del LED de estado del GPS
+tapaL=D(tapa0,[vent,rebaje,mirilla]+ag+bot)
 tapa=L(tapaL)
 cuerpo.export('soporte/soporte_cuerpo.stl')
 # tapa tumbada para imprimir

@@ -1,5 +1,10 @@
 # Historial de cambios
 
+## 2.2.0 – 2026-10-03
+
+- El LED de colores de la placa indica el estado del GPS: rojo, amarillo, verde y guiño al grabar.
+- Tapas con una mirilla de 3,5 mm para ver ese LED.
+
 ## 2.1.0 – 2026-10-03
 
 - Página `/gps` de diagnóstico: indica si el GPS contesta, con contadores, satélites y las últimas frases recibidas.

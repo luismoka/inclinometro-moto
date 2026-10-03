@@ -20,6 +20,19 @@ La antena debe mirar al cielo y no tener metal encima. El NEO-6M tarda entre 30 
 - Abajo aparece la **velocidad** en km/h, o «sin GPS» mientras no hay señal.
 - Un **punto rojo** junto a la velocidad indica que se está grabando una ruta.
 
+## LED de estado
+
+El LED de colores de la placa indica el estado del GPS. Se ve por la mirilla de 3,5 mm de la tapa, junto a la esquina superior derecha de la pantalla.
+
+| Color | Significado |
+|---|---|
+| Rojo | El GPS no contesta |
+| Amarillo | Contesta, pero aún no tiene posición |
+| Verde | Tiene posición |
+| Verde con un guiño cada 2 s | Tiene posición y está grabando la ruta |
+
+El brillo se ajusta con `LED_BRILLO` al principio del código. El módulo GPS tiene además su propio LED, que parpadea una vez por segundo cuando hay posición, pero queda tapado dentro de la caja.
+
 ## Grabación de rutas
 
 - La ruta empieza sola cuando hay señal GPS y la moto pasa de 5 km/h.

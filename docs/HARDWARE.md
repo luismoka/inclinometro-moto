@@ -20,6 +20,7 @@
 | Dirección I2C del sensor | `0x6B` |
 | GPS: TX del módulo | IO13 |
 | GPS: RX del módulo | IO14 |
+| LED de colores: datos / alimentación | IO8 / IO7 |
 | Botón azul | IO0 |
 | Botón naranja | IO47 |
 | Botón verde | IO48 |
