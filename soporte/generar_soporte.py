@@ -34,12 +34,20 @@ cuerpo=D(U([cuello,silla]),[barra,cav,usb]+tun+tornillos)
 tapa0=B(-W/2,W/2,-H/2,H/2,Dp/2,Dp/2+TAPA)
 vent=B(-8.5,8.0,-8.55,7.95,Dp/2-1,Dp/2+TAPA+1)
 ag=[cylZ(1.2,Dp/2-1,Dp/2+TAPA+1,x=sx*19.8,y=sy*11.5) for sx in(-1,1) for sy in(-1,1)]
-bot=[cylZ(2.75,Dp/2-1,Dp/2+TAPA+1,x=-14.35,y=by) for by in(7.1,0.0,-7.1)]
+bot=[cylZ(2.5,Dp/2-1,Dp/2+TAPA+1,x=-14.35,y=by) for by in(7.1,0.0,-7.1)]
 tapaL=D(tapa0,[vent]+ag+bot)
 tapa=L(tapaL)
 cuerpo.export('soporte/soporte_cuerpo.stl')
 # tapa tumbada para imprimir
 tp=tapaL.copy(); tp.apply_translation([0,0,-Dp/2]); tp.export('soporte/soporte_tapa.stl')
+# --- pulsadores (seta): ala por dentro de la tapa, vastago que asoma 3 mm
+# Medido con calibre: 1,92 mm del borde del cuerpo a la punta del boton
+HUECO=1.92; ALA_H=1.6; ALA_D=6.4; VAST_D=4.6; SOBRESALE=3.0
+VAST_H=TAPA+SOBRESALE+(HUECO-ALA_H)
+puls=U([cylZ(ALA_D/2,0,ALA_H,s=64),cylZ(VAST_D/2,ALA_H-0.01,ALA_H+VAST_H,s=64)])
+puls.export('soporte/soporte_pulsador.stl')
+tres=U([puls.copy().apply_translation([i*9.0,0,0]) for i in range(3)])
+tres.export('soporte/soporte_pulsadores_x3.stl')
 print('estancos:',cuerpo.is_watertight,tapa.is_watertight,'| cuerpo',cuerpo.extents.round(1),'tapa',tp.extents.round(1))
 # --- piezas de ambiente para el dibujo
 pcb=L(B(-PX/2,PX/2,-PY/2,PY/2,-Dp/2+3.5,-Dp/2+5.1))
