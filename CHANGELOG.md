@@ -1,5 +1,16 @@
 # Historial de cambios
 
+## 3.0.0 – 2026-10-04
+
+Versión para la placa Waveshare ESP32-S3-LCD-1.69 (`firmware/moto_inclinometro_169`). Compila; sin probar en placa real.
+
+- Pantalla de 240×280: número de inclinación más grande, sin velocidad.
+- Fondo rojo parpadeante al pasar de 40°. Zona central de ±4° marcada como RECTA.
+- Iconos de GPS (rojo parpadeante / verde) y WiFi (gris / verde).
+- BOOT breve gira la pantalla; BOOT 3 s calibra en dos pasos; PWR breve ajusta el centro (solo si el desvío es menor de ±10°); PWR 1,5 s termina o reanuda la ruta.
+- Los máximos se ponen a cero al empezar cada ruta.
+- Página web `/ajustes` con calibración, ajuste de centro y giro de pantalla.
+
 ## 2.3.0 – 2026-10-03
 
 - Terminar la ruta a mano: botón verde mantenido 1,5 s o enlace en la página de rutas. La misma acción reanuda la grabación.
