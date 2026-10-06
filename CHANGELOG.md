@@ -1,5 +1,11 @@
 # Historial de cambios
 
+## 3.1.0 – 2026-10-06
+
+- Botonera externa de membrana de 2 botones en GPIO16, GPIO2 y GPIO3, con aprendizaje automático de los hilos.
+- Amarillo: centro (breve) y calibración completa (3 s). Rojo: borrar máximos (breve) y terminar o reanudar ruta (1,5 s). Los dos: girar pantalla.
+- Documentados los colores del conector de 12 hilos.
+
 ## 3.0.0 – 2026-10-04
 
 Versión para la placa Waveshare ESP32-S3-LCD-1.69 (`firmware/moto_inclinometro_169`). Compila; sin probar en placa real.

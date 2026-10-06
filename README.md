@@ -1,6 +1,6 @@
 # Inclinómetro para moto (MotoLean)
 
-**Versión 3.0**
+**Versión 3.1**
 
 > **Nuevo:** versión para la placa Waveshare ESP32-S3-LCD-1.69 (pantalla de 1,69"), todavía sin probar en placa real. Ver [docs/PLACA_169.md](docs/PLACA_169.md). El resto de este documento describe la versión para la LOLIN S3 Mini Pro (firmware 2.3).
 

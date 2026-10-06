@@ -30,7 +30,7 @@
 #include <ESPmDNS.h>
 #include <time.h>
 
-#define VERSION "3.0"
+#define VERSION "3.1"
 
 // ---------------- Ajustes ----------------
 const char *WIFI_NOMBRE = "MotoLean";
@@ -44,6 +44,9 @@ const char *WIFI_CLAVE  = "moto1234";      // minimo 8 caracteres
 #define PIN_SYS_EN 41     // mantiene la alimentacion cuando va con bateria
 #define PIN_ZUMB  42      // zumbador (sin uso)
 #define IMU_ADDR  0x6B
+// Botonera de membrana de 2 botones y 3 hilos. Los tres hilos van a tres pines, en cualquier orden:
+// el programa aprende que hilos une cada boton, asi que no hace falta saber cual es el comun.
+const uint8_t KB_PIN[3] = { 16, 2, 3 };
 
 #define ANCHO 240
 #define ALTO  280
@@ -85,13 +88,40 @@ uint32_t tUltimoGuardado = 0;
 uint8_t rotacion = 0;
 
 // ---------------- Botones ----------------
+// ---------------- Botonera externa ----------------
+uint8_t kbPar[2] = { 255, 255 };      // par de hilos de cada boton (0..2); 255 = sin configurar
+uint32_t kbTDos = 0;
+// Devuelve una mascara con los pares de hilos que estan unidos: bit0 = 0-1, bit1 = 0-2, bit2 = 1-2
+uint8_t kbLee() {
+  static const uint8_t A[3] = { 0, 0, 1 }, B[3] = { 1, 2, 2 };
+  uint8_t m = 0;
+  for (uint8_t i = 0; i < 3; i++) {
+    pinMode(KB_PIN[A[i]], OUTPUT); digitalWrite(KB_PIN[A[i]], LOW);
+    delayMicroseconds(40);
+    if (digitalRead(KB_PIN[B[i]]) == LOW) m |= 1 << i;
+    pinMode(KB_PIN[A[i]], INPUT_PULLUP);
+    delayMicroseconds(40);
+  }
+  return m;
+}
+
 struct Boton {
   uint8_t pin; uint16_t msLargo; bool activoAlto;
   bool antes = false, largoHecho = false; uint32_t t0 = 0;
   bool corta = false, larga = false;
+  int8_t kb = -1;                     // -1: boton de la placa; 0 amarillo, 1 rojo, 2 los dos a la vez
   Boton(uint8_t p, uint16_t ms, bool alto = false) : pin(p), msLargo(ms), activoAlto(alto) {}
-  void begin() { pinMode(pin, activoAlto ? INPUT : INPUT_PULLUP); antes = pulsado(); largoHecho = antes; }
-  bool pulsado() { return digitalRead(pin) == (activoAlto ? HIGH : LOW); }
+  Boton(int8_t k, uint16_t ms, int) : pin(0), msLargo(ms), activoAlto(false), kb(k) {}
+  void begin() { if (kb < 0) pinMode(pin, activoAlto ? INPUT : INPUT_PULLUP); antes = pulsado(); largoHecho = antes; }
+  bool pulsado() {
+    if (kb < 0) return digitalRead(pin) == (activoAlto ? HIGH : LOW);
+    uint8_t m = kbLee();
+    bool dos = (m & (m - 1)) != 0;    // mas de un par unido: los dos botones
+    if (dos) kbTDos = millis();
+    if (kb == 2) return dos;
+    if (dos || kbPar[kb] > 2) return false;
+    return m == (1 << kbPar[kb]);
+  }
   void leer() {
     corta = larga = false;
     bool ahora = pulsado();
@@ -99,10 +129,12 @@ struct Boton {
     if (ahora && !antes) { t0 = t; largoHecho = false; }
     if (ahora && !largoHecho && t - t0 > msLargo) { larga = true; largoHecho = true; }
     if (!ahora && antes && !largoHecho && t - t0 > 30) corta = true;
+    if (kb >= 0 && kb < 2 && t - kbTDos < 700) corta = larga = false;   // se estaban soltando los dos
     antes = ahora;
   }
 };
 Boton bBoot(BTN_BOOT, 3000), bPwr(BTN_PWR, 1500, true);
+Boton bAma((int8_t)0, 3000, 0), bRojo((int8_t)1, 1500, 0), bDos((int8_t)2, 1500, 0);
 
 // ---------------- IMU QMI8658 ----------------
 void imuEscribe(uint8_t reg, uint8_t val) {
@@ -533,22 +565,57 @@ bool esperaPulsacion() {            // true = confirmado; false = cancelado (BOO
   delay(400);
   uint32_t t0 = millis();
   while (millis() - t0 < 120000UL) {
-    bBoot.leer(); bPwr.leer();
-    if (bBoot.corta || bPwr.corta) return true;
-    if (bBoot.larga) return false;
+    bBoot.leer(); bPwr.leer(); bAma.leer(); bRojo.leer();
+    if (bBoot.corta || bPwr.corta || bAma.corta) return true;
+    if (bBoot.larga || bRojo.corta || bRojo.larga) return false;
     delay(10);
   }
   return false;
 }
 
+// Aprende que hilos une cada boton de la botonera. Se guarda en memoria.
+int8_t kbEsperaPar(int8_t distinto) {
+  uint32_t t0 = millis();
+  while (millis() - t0 < 30000UL) {
+    uint8_t m = kbLee();
+    if (m == 1 || m == 2 || m == 4) {
+      int8_t par = m == 1 ? 0 : m == 2 ? 1 : 2;
+      delay(40);
+      if (kbLee() == m && par != distinto) {
+        while (kbLee()) delay(10);
+        delay(150);
+        return par;
+      }
+    }
+    delay(10);
+  }
+  return -1;
+}
+
+bool kbAprende() {
+  mensaje("BOTONERA 1/2", "Suelta todo y", "pulsa el", "AMARILLO");
+  while (kbLee()) delay(10);
+  int8_t a = kbEsperaPar(-1);
+  if (a < 0) { mensaje("BOTONERA", "sin respuesta", "", "", TFT_RED); delay(1500); return false; }
+  mensaje("BOTONERA 2/2", "Ahora pulsa", "el", "ROJO");
+  int8_t r = kbEsperaPar(a);
+  if (r < 0) { mensaje("BOTONERA", "sin respuesta", "", "", TFT_RED); delay(1500); return false; }
+  kbPar[0] = a; kbPar[1] = r;
+  nvs.putUChar("kbA", a); nvs.putUChar("kbR", r);
+  bAma.begin(); bRojo.begin(); bDos.begin();
+  mensaje("BOTONERA", "configurada", "", "", TFT_GREEN);
+  delay(1200);
+  return true;
+}
+
 void calibrar() {
-  mensaje("CALIBRAR 1/2", "Moto RECTA", "y quieta", "pulsa BOOT");
+  mensaje("CALIBRAR 1/2", "Moto RECTA", "y quieta", "AMARILLO: seguir");
   if (!esperaPulsacion()) return;
   mensaje("Midiendo...", "no la muevas");
   delay(500);
   calPaso1();
 
-  mensaje("CALIBRAR 2/2", "Apoyala en la", "PATA DE CABRA", "pulsa BOOT");
+  mensaje("CALIBRAR 2/2", "Apoyala en la", "PATA DE CABRA", "AMARILLO: seguir");
   if (!esperaPulsacion()) return;
   mensaje("Midiendo...", "no la muevas");
   delay(500);
@@ -796,6 +863,7 @@ void paginaAjustes(const String &aviso) {
          "<a class='b' href='/cal1'>Calibraci&oacute;n completa, paso 1<br><small>Pon la moto recta y quieta, y pulsa aqu&iacute;</small></a>"
          "<a class='b' href='/cal2'>Calibraci&oacute;n completa, paso 2<br><small>Ap&oacute;yala en la pata de cabra, y pulsa aqu&iacute;</small></a>"
          "<a class='b' href='/girar'>Girar la pantalla 180&deg;</a>"
+         "<a class='b' href='/botonera'>Configurar la botonera<br><small>Despu&eacute;s de pulsar aqu&iacute;, sigue las instrucciones de la pantalla</small></a>"
          "<a class='b' href='/reset2' onclick=\"return confirm('Borrar maximos?')\">Borrar los m&aacute;ximos</a>"
          "<p><a href='/'>Volver</a></p></body></html>");
   web.send(200, "text/html", h);
@@ -833,6 +901,10 @@ void webInicia() {
     paginaAjustes(calPaso2() ? F("Calibraci&oacute;n completa hecha.")
                              : F("No se pudo calibrar: haz antes el paso 1 y comprueba que la moto queda bien inclinada sobre la pata."));
   });
+  web.on("/botonera", []() {
+    web.sendHeader("Location", "/ajustes"); web.send(302, "text/plain", "");
+    kbAprende();
+  });
   web.on("/girar", []() { giraPantalla(); paginaAjustes(F("Pantalla girada.")); });
   web.on("/reset2", []() { borraMaximos(); paginaAjustes(F("M&aacute;ximos borrados.")); });
   web.on("/fin", []() {
@@ -856,6 +928,9 @@ void setup() {
 
   nvs.begin("moto", false);
   cargaTodo();
+  for (uint8_t i = 0; i < 3; i++) pinMode(KB_PIN[i], INPUT_PULLUP);
+  kbPar[0] = nvs.getUChar("kbA", 255); kbPar[1] = nvs.getUChar("kbR", 255);
+  bAma.begin(); bRojo.begin(); bDos.begin();
   if (rotacion != 2) rotacion = 0;      // esta pantalla solo se usa en vertical: normal o girada 180
 
   pinMode(PIN_BL, OUTPUT); digitalWrite(PIN_BL, HIGH);
@@ -908,15 +983,24 @@ void loop() {
   bBoot.leer(); bPwr.leer();
   if (bBoot.larga) { calibrar(); tAnt = micros(); }
   if (bBoot.corta) giraPantalla();
-  if (bPwr.corta) {                         // ajuste de centro
+  bAma.leer(); bRojo.leer(); bDos.leer();
+  if (kbPar[0] > 2 && kbLee()) { kbAprende(); tAnt = micros(); }   // primera pulsacion: configurar la botonera
+  if (bAma.larga) { calibrar(); tAnt = micros(); }
+  if (bDos.larga) giraPantalla();
+  if (bRojo.corta) {
+    borraMaximos();
+    mensaje("MAXIMOS", "borrados", "", "", TFT_GREEN);
+    delay(800); tAnt = micros();
+  }
+  if (bPwr.corta || bAma.corta) {           // ajuste de centro
     if (ajustaCentro()) mensaje("CENTRO", "ajustado", "ahora marca 0", "", TFT_GREEN);
     else mensaje("CENTRO", "no ajustado", "mas de 10 grados", "", TFT_RED);
     delay(1000); tAnt = micros();
   }
-  if (bPwr.larga) {                         // parar / reanudar la grabacion de rutas
+  if (bPwr.larga || bRojo.larga) {                         // parar / reanudar la grabacion de rutas
     rutaPausa = !rutaPausa;
     if (rutaPausa) terminaRuta();
-    if (rutaPausa) mensaje("RUTA", "terminada", "y guardada", "PWR 1,5 s: reanudar", TFT_GREEN);
+    if (rutaPausa) mensaje("RUTA", "terminada", "y guardada", "ROJO 1,5 s: reanudar", TFT_GREEN);
     else mensaje("RUTA", "grabacion", "activada", "", TFT_GREEN);
     delay(1200); tAnt = micros();
   }
