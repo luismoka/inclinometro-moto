@@ -123,8 +123,8 @@ def malla(m):
 def suelo(m): return m.translate((0,0,-m.val().BoundingBox().zmin))
 piezas={'caja169_modulo':suelo(modulo),'caja169_tapa':suelo(tapa),'caja169_base':suelo(base)}   # posturas de impresion
 for n,m in piezas.items():
-    malla(m).export(DIR+n+'.stl')
     cq.exporters.export(m,DIR+n+'.step')
+    malla(cq.importers.importStep(DIR+n+'.step')).export(DIR+n+'.stl')   # desde el STEP: la malla sale cerrada
 conj=cq.Assembly()
 conj.add(W(modulo),name='modulo',color=cq.Color(0.37,0.39,0.43)); conj.add(W(tapa),name='tapa',color=cq.Color(0.92,0.47,0.12))
 conj.add(base_m,name='base',color=cq.Color(0.6,0.62,0.66))
