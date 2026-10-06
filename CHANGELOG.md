@@ -1,5 +1,9 @@
 # Historial de cambios
 
+## 3.2.0 – 2026-10-06
+
+- Símbolo REC parpadeante arriba en el centro mientras se graba la ruta (sustituye al punto rojo).
+
 ## 3.1.0 – 2026-10-06
 
 - Botonera externa de membrana de 2 botones en GPIO16, GPIO2 y GPIO3, con aprendizaje automático de los hilos.

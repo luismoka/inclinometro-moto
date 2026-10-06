@@ -1,4 +1,4 @@
-# Versión para Waveshare ESP32-S3-LCD-1.69 (firmware 3.1)
+# Versión para Waveshare ESP32-S3-LCD-1.69 (firmware 3.2)
 
 Adaptación del inclinómetro a la placa **Waveshare ESP32-S3-LCD-1.69** (sin táctil): pantalla de 1,69" y 240×280 puntos, con el mismo sensor de movimiento QMI8658.
 
@@ -12,7 +12,8 @@ Adaptación del inclinómetro a la placa **Waveshare ESP32-S3-LCD-1.69** (sin t�
 - **Arco de color** y máximos a izquierda y derecha.
 - **Barras laterales**: aceleración y frenada.
 - **Fondo rojo parpadeante** al pasar de 40° de inclinación.
-- **Icono GPS (arriba a la izquierda)**: rojo parpadeando sin señal, verde fijo con señal. Un punto rojo al lado indica que se está grabando ruta.
+- **Icono GPS (arriba a la izquierda)**: rojo parpadeando sin señal, verde fijo con señal. 
+- **REC (arriba en el centro)**: parpadea en rojo mientras se graba la ruta.
 - **Icono WiFi (arriba a la derecha)**: gris sin conexión, verde cuando está unido a la WiFi de casa o hay un móvil conectado a la red `MotoLean`.
 - La velocidad no se muestra en pantalla (sí se graba en la ruta).
 

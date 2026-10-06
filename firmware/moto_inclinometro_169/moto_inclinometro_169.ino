@@ -12,7 +12,7 @@
           mantener 1,5 s   -> terminar la ruta y parar la grabacion (otra vez: reanudar)
 
   PANTALLA
-    Icono GPS (arriba izquierda): verde fijo con posicion, rojo parpadeando sin ella. Punto rojo = grabando.
+    Icono GPS (arriba izquierda): verde fijo con posicion, rojo parpadeando sin ella. REC parpadeando arriba en el centro = grabando.
     Icono WiFi (arriba derecha): verde con conexion, gris sin ella.
     Por encima de 40 grados el fondo parpadea en rojo. Por debajo de 4 grados marca RECTA.
 
@@ -30,7 +30,7 @@
 #include <ESPmDNS.h>
 #include <time.h>
 
-#define VERSION "3.1"
+#define VERSION "3.2"
 
 // ---------------- Ajustes ----------------
 const char *WIFI_NOMBRE = "MotoLean";
@@ -450,7 +450,12 @@ void dibuja() {
   // Iconos de estado
   if (gpsFix) iconoGps(38, 30, C_VERDE);
   else if ((ms / 400) % 2 == 0) iconoGps(38, 30, C_ROJO);
-  if (grabando) spr.fillCircle(60, 20, 4, C_ROJO);                 // punto rojo = grabando ruta
+  if (grabando && (ms / 500) % 2 == 0) {                           // REC parpadeando = grabando ruta
+    uint16_t cRec = aviso ? TFT_WHITE : C_ROJO;                    // sobre el fondo rojo de aviso, en blanco
+    spr.fillCircle(92, 21, 8, cRec);
+    spr.setTextDatum(ML_DATUM); spr.setTextColor(cRec, cFondo);
+    spr.drawString("REC", 105, 22, 4);
+  }
   bool hayWifi = casaConectada || WiFi.softAPgetStationNum() > 0;
   iconoWifi(202, 28, hayWifi ? C_VERDE : gris);
 
