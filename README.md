@@ -82,6 +82,8 @@ docs/                  Documentación e imágenes
 | Página del mapa | Probada con una ruta inventada; el fondo de mapa está pendiente de confirmar |
 | Soporte sencillo (sin GPS) | Primera versión impresa; la versión corregida con medidas de calibre está sin imprimir |
 | Caja desmontable con GPS | Diseñada; **sin imprimir** |
+| Placa Waveshare 1,69" (firmware 3.2.1) | Cargado en la placa: arranca, pantalla, sensor y GPS responden. Pendiente de probar en marcha |
+| Caja para la placa 1,69" | Diseñada; **sin imprimir** |
 | Medida del manillar | Calculada (tubo de 28,6 mm), sin medir en la moto |
 
 ## Aviso de seguridad

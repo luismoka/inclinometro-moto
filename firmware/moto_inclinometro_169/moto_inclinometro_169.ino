@@ -1020,7 +1020,7 @@ void loop() {
   if (ms - tDib > 70) {
     tDib = ms;
     if (calibrado) dibuja();
-    else mensaje("SIN CALIBRAR", "Manten BOOT 3 s", "para calibrar");
+    else mensaje("SIN CALIBRAR", "AMARILLO 3 s", "para calibrar");
   }
   // Guardado automatico (como mucho cada 5 s, y solo si ha cambiado algun maximo)
   if (hayQueGuardar && ms - tUltimoGuardado > 5000) guardaMaximos();

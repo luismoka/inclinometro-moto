@@ -36,13 +36,13 @@ El autor compila y graba con **Arduino IDE 2** en Windows; no des por hecho que 
 
 | Firmware | Placa en el IDE | Opciones |
 |---|---|---|
-| `moto_inclinometro_169` | ESP32S3 Dev Module | USB CDC On Boot activado, Flash 16MB, partición `16M Flash (3MB APP/9.9MB FATFS)`, PSRAM OPI. TFT_eSPI con `Setup_Waveshare_169.h` |
+| `moto_inclinometro_169` | ESP32S3 Dev Module | USB CDC On Boot activado, Flash 16MB, partición `16M Flash (3MB APP/9.9MB FATFS)`, PSRAM desactivada (Disabled). TFT_eSPI con `Setup_Waveshare_169.h` |
 | `moto_inclinometro` | LOLIN S3 Mini | USB CDC On Boot activado. TFT_eSPI de WEMOS con `Setup406` |
 
 Si en la sesión hay `arduino-cli` (por ejemplo en la nube), los comandos equivalentes son:
 
 ```
-arduino-cli compile --fqbn esp32:esp32:esp32s3:CDCOnBoot=cdc,FlashSize=16M,PartitionScheme=app3M_fat9M_16MB,PSRAM=opi firmware/moto_inclinometro_169
+arduino-cli compile --fqbn esp32:esp32:esp32s3:CDCOnBoot=cdc,FlashSize=16M,PartitionScheme=app3M_fat9M_16MB,PSRAM=disabled firmware/moto_inclinometro_169
 arduino-cli compile -b esp32:esp32:lolin_s3_mini:CDCOnBoot=cdc --output-dir build firmware/moto_inclinometro
 ```
 

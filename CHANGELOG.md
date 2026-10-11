@@ -1,5 +1,11 @@
 # Historial de cambios
 
+## 3.2.1 – 2026-10-11
+
+- Placa Waveshare 1,69": el firmware se compila sin PSRAM. Con la PSRAM activada la placa no la encontraba y la pantalla se quedaba en negro.
+- Sin calibrar, la pantalla pide mantener el botón amarillo 3 s (antes decía BOOT).
+- Cargado en la placa: arranca, la pantalla funciona y el sensor y el GPS responden. Sin probar en marcha.
+
 ## 3.2.0 – 2026-10-06
 
 - Símbolo REC parpadeante arriba en el centro mientras se graba la ruta (sustituye al punto rojo).

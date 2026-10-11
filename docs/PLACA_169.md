@@ -2,7 +2,7 @@
 
 Adaptación del inclinómetro a la placa **Waveshare ESP32-S3-LCD-1.69** (sin táctil): pantalla de 1,69" y 240×280 puntos, con el mismo sensor de movimiento QMI8658.
 
-> **Estado: compila, pero todavía no se ha probado en una placa real.** Los puntos pendientes de comprobar están al final.
+> **Estado: cargado en la placa.** Arranca, la pantalla funciona y el sensor y el GPS responden. Falta probarlo en marcha. Los puntos pendientes de comprobar están al final.
 
 ![Pantalla](img/pantalla_169.png)
 
@@ -78,10 +78,10 @@ Fichero: [`firmware/bin/MotoLean_169_firmware.bin`](../firmware/bin/MotoLean_169
 
 ## Compilar
 
-Placa `ESP32S3 Dev Module`, USB CDC On Boot activado, Flash 16MB, partición `16M Flash (3MB APP/9.9MB FATFS)`, PSRAM `OPI`. En TFT_eSPI se usa la configuración [`Setup_Waveshare_169.h`](../firmware/moto_inclinometro_169/Setup_Waveshare_169.h).
+Placa `ESP32S3 Dev Module`, USB CDC On Boot activado, Flash 16MB, partición `16M Flash (3MB APP/9.9MB FATFS)`, PSRAM `Disabled` (con la PSRAM activada la pantalla se queda en negro). En TFT_eSPI se usa la configuración [`Setup_Waveshare_169.h`](../firmware/moto_inclinometro_169/Setup_Waveshare_169.h).
 
 ```
-arduino-cli compile --fqbn esp32:esp32:esp32s3:CDCOnBoot=cdc,FlashSize=16M,PartitionScheme=app3M_fat9M_16MB,PSRAM=opi firmware/moto_inclinometro_169
+arduino-cli compile --fqbn esp32:esp32:esp32s3:CDCOnBoot=cdc,FlashSize=16M,PartitionScheme=app3M_fat9M_16MB,PSRAM=disabled firmware/moto_inclinometro_169
 ```
 
 ## Pendiente de comprobar en la placa
@@ -89,4 +89,4 @@ arduino-cli compile --fqbn esp32:esp32:esp32s3:CDCOnBoot=cdc,FlashSize=16M,Parti
 - Colores de la pantalla (orden de color e inversión). Si salen cambiados o en negativo se corrige en una línea.
 - Botón PWR: se ha supuesto que da nivel alto al pulsarlo, según la documentación.
 - El zumbador de la placa no se usa.
-- Las cajas impresas del repositorio son para la LOLIN y no sirven para esta placa.
+- La caja para esta placa ([CAJA_169.md](CAJA_169.md)) está diseñada pero sin imprimir.
