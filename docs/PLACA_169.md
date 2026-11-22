@@ -89,4 +89,5 @@ arduino-cli compile --fqbn esp32:esp32:esp32s3:CDCOnBoot=cdc,FlashSize=16M,Parti
 - Colores de la pantalla (orden de color e inversión). Si salen cambiados o en negativo se corrige en una línea.
 - Botón PWR: se ha supuesto que da nivel alto al pulsarlo, según la documentación.
 - El zumbador de la placa no se usa.
+- Clave de la WiFi y de la web: sin compilar ni probar; falta comprobar el cambio de clave, la petición de usuario y clave en el móvil y la recuperación con BOOT al encender.
 - La caja para esta placa ([CAJA_169.md](CAJA_169.md)) está diseñada pero sin imprimir.

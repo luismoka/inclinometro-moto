@@ -16,7 +16,9 @@
     Icono WiFi (arriba derecha): verde con conexion, gris sin ella.
     Por encima de 40 grados el fondo parpadea en rojo. Por debajo de 4 grados marca RECTA.
 
-  MOVIL: conectate a la WiFi "MotoLean" (clave moto1234) y abre http://192.168.4.1
+  MOVIL: conectate a la WiFi "MotoLean" y abre http://192.168.4.1 (usuario moto).
+         La clave de fabrica es moto1234 y la web obliga a cambiarla la primera vez.
+         Para volver a la de fabrica: mantener BOOT 3 s nada mas encender.
 
   Libreria necesaria: TFT_eSPI, configurada con Setup_Waveshare_169.h (ver docs/PLACA_169.md).
 */
@@ -34,7 +36,7 @@
 
 // ---------------- Ajustes ----------------
 const char *WIFI_NOMBRE = "MotoLean";
-const char *WIFI_CLAVE  = "moto1234";      // minimo 8 caracteres
+const char *WIFI_CLAVE  = "moto1234";      // clave de fabrica: la web obliga a cambiarla
 
 #define PIN_SDA   11
 #define PIN_SCL   10
@@ -691,7 +693,7 @@ const char PAGINA[] PROGMEM = R"HTML(<!DOCTYPE html><html lang="es"><head><meta 
 <div class="c"><span>Velocidad</span><b id="v">-</b></div>
 <div class="c"><span>Max velocidad</span><b id="mv">-</b></div>
 <div class="c" style="grid-column:1/3"><span>Aceleracion ahora</span><b id="al">-</b></div></div>
-<p id="g" style="color:#999"></p><p><a href="/rutas" style="color:#6cf;font-size:20px">Rutas grabadas</a> &nbsp; <a href="/wifi" style="color:#6cf;font-size:20px">WiFi de casa</a> &nbsp; <a href="/gps" style="color:#6cf;font-size:20px">GPS</a> &nbsp; <a href="/ajustes" style="color:#6cf;font-size:20px">Ajustes</a></p>
+<p id="g" style="color:#999"></p><p><a href="/rutas" style="color:#6cf;font-size:20px">Rutas grabadas</a> &nbsp; <a href="/wifi" style="color:#6cf;font-size:20px">WiFi de casa</a> &nbsp; <a href="/gps" style="color:#6cf;font-size:20px">GPS</a> &nbsp; <a href="/clave" style="color:#6cf;font-size:20px">Clave</a> &nbsp; <a href="/ajustes" style="color:#6cf;font-size:20px">Ajustes</a></p>
 <p style="color:#666;font-size:13px">MotoLean 3.0</p>
 <button onclick="if(confirm('Borrar maximos?'))fetch('/reset')">Borrar maximos</button>
 <script>async function t(){try{const d=await(await fetch('/datos')).json();
@@ -700,6 +702,112 @@ s.textContent=d.cal?(d.lean<-1.5?'\u25c0 IZQUIERDA':d.lean>1.5?'DERECHA \u25b6':
 mi.textContent=d.mi.toFixed(0)+'\u00b0';md.textContent=d.md.toFixed(0)+'\u00b0';
 ma.textContent=d.ma.toFixed(2)+' g';mf.textContent=d.mf.toFixed(2)+' g';
 al.textContent=d.al.toFixed(2)+' g';v.textContent=d.gps?d.v.toFixed(0)+' km/h':'--';mv.textContent=d.mv.toFixed(0)+' km/h';g.textContent=(d.gps?'GPS con se\u00f1al':'GPS sin se\u00f1al')+(d.rec?' \u00b7 grabando ruta':'');}catch(e){}setTimeout(t,250)}t()</script></body></html>)HTML";
+
+// ---------------- Clave de la WiFi y de la web ----------------
+// La misma clave sirve para entrar en la WiFi MotoLean y en la web (usuario "moto").
+// Mientras sea la de fabrica, la web solo deja cambiarla. Se guarda en la memoria (apClave).
+String claveAP = WIFI_CLAVE;
+
+void claveCarga() {
+  claveAP = nvs.getString("apClave", WIFI_CLAVE);
+  if (claveAP.length() < 8 || claveAP.length() > 63) claveAP = WIFI_CLAVE;
+}
+
+bool claveDeFabrica() { return claveAP == WIFI_CLAVE; }
+
+// Volver a la clave de fabrica: mantener BTN_BOOT 3 s nada mas encender, mientras sale el aviso.
+// No se pulsa antes de encender: con BTN_BOOT pulsado al dar corriente la placa entra en modo de carga.
+void claveRecupera() {
+  mensaje("MotoLean " VERSION, "Arrancando...", "BOOT 3 s: clave", "WiFi de fabrica", TFT_GREEN);
+  uint32_t t0 = millis();
+  while (millis() - t0 < 1500 && digitalRead(BTN_BOOT) != LOW) delay(10);
+  if (digitalRead(BTN_BOOT) != LOW) return;
+  t0 = millis();
+  while (digitalRead(BTN_BOOT) == LOW) {
+    if (millis() - t0 > 3000) {
+      nvs.remove("apClave");
+      claveAP = WIFI_CLAVE;
+      mensaje("CLAVE WIFI", "de fabrica:", WIFI_CLAVE, "suelta el boton", TFT_GREEN);
+      while (digitalRead(BTN_BOOT) == LOW) delay(10);
+      delay(1500);
+      return;
+    }
+    delay(10);
+  }
+}
+
+// Texto que viene de fuera (nombre de la WiFi, frases del GPS) escapado para meterlo en el HTML
+String html(const String &s) {
+  String r;
+  r.reserve(s.length() + 8);
+  for (unsigned int i = 0; i < s.length(); i++) {
+    char c = s[i];
+    if (c == '<') r += "&lt;";
+    else if (c == '>') r += "&gt;";
+    else if (c == '&') r += "&amp;";
+    else if (c == '"') r += "&quot;";
+    else if (c == '\'') r += "&#39;";
+    else r += c;
+  }
+  return r;
+}
+
+// Toda la web pide la clave. Con la clave de fabrica, cualquier pagina lleva a /clave para cambiarla.
+bool acceso(bool esPaginaClave = false) {
+  if (!web.authenticate("moto", claveAP.c_str())) {
+    web.requestAuthentication(BASIC_AUTH, "MotoLean");
+    return false;
+  }
+  if (claveDeFabrica() && !esPaginaClave) {
+    web.sendHeader("Location", "/clave");
+    web.send(303, "text/plain", "");
+    return false;
+  }
+  return true;
+}
+
+void pagina(const char *uri, WebServer::THandlerFunction f) {
+  web.on(uri, [f]() { if (acceso()) f(); });
+}
+
+void webClave() {
+  String aviso;
+  if (web.method() == HTTP_POST) {
+    String c = web.arg("c");
+    bool imprimible = true;
+    for (unsigned int i = 0; i < c.length(); i++) if ((uint8_t)c[i] < 32 || (uint8_t)c[i] > 126) imprimible = false;
+    if (c.length() < 8 || c.length() > 63) aviso = F("La clave tiene que tener entre 8 y 63 caracteres.");
+    else if (!imprimible) aviso = F("Usa solo letras sin acentos, n&uacute;meros y signos normales.");
+    else if (c != web.arg("c2")) aviso = F("Las dos claves no coinciden.");
+    else if (c == WIFI_CLAVE) aviso = F("Elige una clave distinta de la de f&aacute;brica.");
+    else {
+      nvs.putString("apClave", c);
+      web.send(200, "text/html", F("<meta charset='utf-8'><body style='background:#111;color:#eee;font-family:sans-serif;padding:16px'>"
+                                   "<p>Clave guardada. La placa se reinicia.</p><p>Vuelve a conectarte a la WiFi <b>MotoLean</b> con la clave nueva."
+                                   " Para la web, el usuario es <b>moto</b> y la clave, la misma.</p></body>"));
+      if (grabando) fRuta.close();
+      delay(800);
+      ESP.restart();
+      return;
+    }
+  }
+  String h = F("<!DOCTYPE html><html lang='es'><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'>"
+               "<title>Clave</title><style>body{background:#111;color:#eee;font-family:sans-serif;padding:16px}a{color:#6cf}"
+               "input{font-size:18px;padding:8px;margin:6px 0;width:100%;box-sizing:border-box}button{font-size:18px;padding:10px 20px}"
+               "p.m{background:#622;padding:12px;border-radius:10px}</style></head><body><h2>Clave de MotoLean</h2>");
+  if (claveDeFabrica()) h += F("<p class='m'>La placa a&uacute;n tiene la clave de f&aacute;brica, que conoce cualquiera."
+                               " C&aacute;mbiala antes de usar la web.</p>");
+  if (aviso.length()) h += "<p class='m'>" + aviso + "</p>";
+  h += F("<p>Es la clave de la WiFi <b>MotoLean</b> y tambi&eacute;n la de esta web (usuario <b>moto</b>).</p>"
+         "<form method='post'>Clave nueva (8 a 63 caracteres)<input name='c' type='password' minlength='8' maxlength='63'>"
+         "Rep&iacute;tela<input name='c2' type='password' minlength='8' maxlength='63'>"
+         "<button>Guardar y reiniciar</button></form>"
+         "<p><small>Si la olvidas: enciende la placa y, en cuanto se ilumine la pantalla, mant&eacute;n BOOT 3 s."
+         " Vuelve la clave de f&aacute;brica.</small></p>");
+  if (!claveDeFabrica()) h += F("<p><a href='/'>Volver</a></p>");
+  h += F("</body></html>");
+  web.send(200, "text/html", h);
+}
 
 // Nombre de ruta pedido por la web: solo se aceptan los ficheros de ruta
 bool rutaValida(String &f) {
@@ -825,8 +933,8 @@ void webWifi() {
                "<title>WiFi de casa</title><style>body{background:#111;color:#eee;font-family:sans-serif;padding:16px}a{color:#6cf}"
                "input{font-size:18px;padding:8px;margin:6px 0;width:100%;box-sizing:border-box}button{font-size:18px;padding:10px 20px}</style></head><body>"
                "<h2>WiFi de casa</h2>");
-  if (casaConectada) h += "<p>Conectada a <b>" + wifiCasa + "</b>.<br>Direcci&oacute;n: http://" + WiFi.localIP().toString() + " &middot; http://motolean.local</p>";
-  else if (wifiCasa != "") h += "<p>Configurada <b>" + wifiCasa + "</b>, ahora mismo sin conexi&oacute;n.</p>";
+  if (casaConectada) h += "<p>Conectada a <b>" + html(wifiCasa) + "</b>.<br>Direcci&oacute;n: http://" + WiFi.localIP().toString() + " &middot; http://motolean.local</p>";
+  else if (wifiCasa != "") h += "<p>Configurada <b>" + html(wifiCasa) + "</b>, ahora mismo sin conexi&oacute;n.</p>";
   else h += F("<p>Sin configurar.</p>");
   h += F("<form method='post'>Nombre de la WiFi<input name='s' maxlength='32'>Clave<input name='c' type='password' maxlength='63'>"
          "<button>Guardar y reiniciar</button></form><p><small>Deja el nombre vac&iacute;o para dejar de usar la WiFi de casa.</small></p>"
@@ -851,7 +959,7 @@ void webGps() {
                    "<tr><td>Velocidad</td><td>" + String(gpsKmh, 1) + " km/h</td></tr>";
   h += F("</table><p>&Uacute;ltimas frases recibidas:</p><pre>");
   int n = gpsUltN < 6 ? gpsUltN : 6;
-  for (int i = 0; i < n; i++) { h += gpsUltimas[(gpsUltN - n + i) % 6]; h += "\n"; }
+  for (int i = 0; i < n; i++) { h += html(gpsUltimas[(gpsUltN - n + i) % 6]); h += "\n"; }
   if (n == 0) h += "(ninguna)";
   h += F("</pre><p><small>La p&aacute;gina se actualiza sola cada 2 segundos.</small></p><p><a href='/'>Volver</a></p></body></html>");
   web.send(200, "text/html", h);
@@ -881,8 +989,8 @@ void giraPantalla() {
 }
 
 void webInicia() {
-  web.on("/", []() { web.send_P(200, "text/html", PAGINA); });
-  web.on("/datos", []() {
+  pagina("/", []() { web.send_P(200, "text/html", PAGINA); });
+  pagina("/datos", []() {
     char b[240];
     snprintf(b, sizeof(b), "{\"lean\":%.1f,\"mi\":%.1f,\"md\":%.1f,\"ma\":%.2f,\"mf\":%.2f,\"al\":%.2f,\"cal\":%d,"
              "\"v\":%.1f,\"mv\":%.1f,\"gps\":%d,\"rec\":%d}",
@@ -890,34 +998,35 @@ void webInicia() {
              gpsKmh, maxVel, gpsFix ? 1 : 0, grabando ? 1 : 0);
     web.send(200, "application/json", b);
   });
-  web.on("/reset", []() { borraMaximos(); web.send(200, "text/plain", "ok"); });
-  web.on("/rutas", webRutas);
-  web.on("/ruta", webRuta);
-  web.on("/borrar", webBorrar);
-  web.on("/wifi", webWifi);
-  web.on("/gps", webGps);
-  web.on("/ajustes", []() { paginaAjustes(""); });
-  web.on("/centro", []() {
+  pagina("/reset", []() { borraMaximos(); web.send(200, "text/plain", "ok"); });
+  pagina("/rutas", webRutas);
+  pagina("/ruta", webRuta);
+  pagina("/borrar", webBorrar);
+  pagina("/wifi", webWifi);
+  pagina("/gps", webGps);
+  pagina("/ajustes", []() { paginaAjustes(""); });
+  pagina("/centro", []() {
     paginaAjustes(ajustaCentro() ? F("Centro ajustado: ahora marca 0&deg;.")
                                  : F("No ajustado: la moto debe estar calibrada y a menos de 10&deg; de la vertical."));
   });
-  web.on("/cal1", []() { calPaso1(); paginaAjustes(F("Paso 1 hecho. Ahora apoya la moto en la pata de cabra y pulsa el paso 2.")); });
-  web.on("/cal2", []() {
+  pagina("/cal1", []() { calPaso1(); paginaAjustes(F("Paso 1 hecho. Ahora apoya la moto en la pata de cabra y pulsa el paso 2.")); });
+  pagina("/cal2", []() {
     paginaAjustes(calPaso2() ? F("Calibraci&oacute;n completa hecha.")
                              : F("No se pudo calibrar: haz antes el paso 1 y comprueba que la moto queda bien inclinada sobre la pata."));
   });
-  web.on("/botonera", []() {
+  pagina("/botonera", []() {
     web.sendHeader("Location", "/ajustes"); web.send(302, "text/plain", "");
     kbAprende();
   });
-  web.on("/girar", []() { giraPantalla(); paginaAjustes(F("Pantalla girada.")); });
-  web.on("/reset2", []() { borraMaximos(); paginaAjustes(F("M&aacute;ximos borrados.")); });
-  web.on("/fin", []() {
+  pagina("/girar", []() { giraPantalla(); paginaAjustes(F("Pantalla girada.")); });
+  pagina("/reset2", []() { borraMaximos(); paginaAjustes(F("M&aacute;ximos borrados.")); });
+  pagina("/fin", []() {
     rutaPausa = !web.hasArg("r");
     if (rutaPausa) terminaRuta();
     web.sendHeader("Location", "/rutas");
     web.send(303, "text/plain", "");
   });
+  web.on("/clave", []() { if (acceso(true)) webClave(); });
   web.begin();
 }
 
@@ -932,6 +1041,7 @@ void setup() {
   bBoot.begin(); bPwr.begin();
 
   nvs.begin("moto", false);
+  claveCarga();
   cargaTodo();
   for (uint8_t i = 0; i < 3; i++) pinMode(KB_PIN[i], INPUT_PULLUP);
   kbPar[0] = nvs.getUChar("kbA", 255); kbPar[1] = nvs.getUChar("kbR", 255);
@@ -947,6 +1057,7 @@ void setup() {
     spr.setColorDepth(8);
     spr.createSprite(ANCHO, ALTO);
   }
+  claveRecupera();                     // BOOT 3 s al encender: clave de fabrica
 
   Wire.setPins(PIN_SDA, PIN_SCL);
   Wire.begin();
@@ -962,7 +1073,7 @@ void setup() {
   fsOk = LittleFS.begin(true, "/littlefs", 10, "ffat") || LittleFS.begin(true);
 
   wifiCasaInicia();
-  WiFi.softAP(WIFI_NOMBRE, WIFI_CLAVE);
+  WiFi.softAP(WIFI_NOMBRE, claveAP.c_str());
   webInicia();
 
   // Al encender: si la moto esta quieta, afinamos el cero del giroscopio

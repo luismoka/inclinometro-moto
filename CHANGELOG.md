@@ -1,5 +1,16 @@
 # Historial de cambios
 
+## Sin publicar
+
+Seguridad de la WiFi y de la web, en los dos firmwares (1,69" y LOLIN):
+
+- La web pide usuario (`moto`) y clave en todas las páginas. La clave es la misma de la WiFi `MotoLean`.
+- La clave de la WiFi se cambia desde la web (página **Clave**). Mientras sea la de fábrica (`moto1234`), la web solo deja cambiarla.
+- Para volver a la clave de fábrica: mantener BOOT (1,69") o AZUL (LOLIN) 3 s nada más encender.
+- El nombre de la WiFi de casa y las frases del GPS se muestran escapados en la web.
+- Mapa: Leaflet se carga desde unpkg con comprobación de integridad (SRI).
+- Sin compilar ni probar en la placa.
+
 ## 3.2.1 – 2026-10-11
 
 - Placa Waveshare 1,69": el firmware se compila sin PSRAM. Con la PSRAM activada la placa no la encontraba y la pantalla se quedaba en negro.

@@ -6,8 +6,10 @@ El proyecto tiene dos partes web: las páginas que sirve la propia placa y la p�
 
 | Situación | Red WiFi | Dirección |
 |---|---|---|
-| En cualquier sitio | `MotoLean` (clave `moto1234`) | <http://192.168.4.1> |
+| En cualquier sitio | `MotoLean` (clave de fábrica `moto1234`) | <http://192.168.4.1> |
 | En casa, con la WiFi de casa configurada | La de casa | <http://motolean.local> |
+
+Todas las páginas piden usuario y clave: el usuario es **`moto`** y la clave es la de la WiFi `MotoLean`. Mientras la placa tenga la clave de fábrica, cualquier página lleva a **Clave** para cambiarla.
 
 Hay que escribir `http://` delante: con `https` no funciona. Si el móvil avisa de que la red `MotoLean` no tiene internet, es normal; hay que elegir mantener la conexión.
 
@@ -24,7 +26,7 @@ Datos en directo, actualizados cuatro veces por segundo:
 - Aceleración en directo.
 - Estado del GPS y si se está grabando una ruta.
 - Botón para borrar los máximos.
-- Enlaces a **Rutas grabadas** y **WiFi de casa**.
+- Enlaces a **Rutas grabadas**, **WiFi de casa**, **GPS** y **Clave**.
 
 ### Rutas grabadas (`/rutas`)
 
@@ -33,6 +35,10 @@ Lista de las rutas guardadas, con fecha y hora (UTC), minutos en movimiento y me
 ### WiFi de casa (`/wifi`)
 
 Formulario para escribir el nombre y la clave de la WiFi doméstica. Al guardar, la placa se reinicia. Dejando el nombre vacío deja de usarla. Los detalles están en [GPS_Y_RUTAS.md](GPS_Y_RUTAS.md#wifi-de-casa).
+
+### Clave (`/clave`)
+
+Cambia la clave de la WiFi `MotoLean`, que es también la de la web. Tiene que tener entre 8 y 63 caracteres, sin acentos ni eñes, y no puede ser la de fábrica. Al guardar, la placa se reinicia y hay que volver a conectarse con la clave nueva. Si se olvida, se recupera la de fábrica con un botón al encender: ver [USO.md](USO.md#si-olvidas-la-clave).
 
 ### Diagnóstico del GPS (`/gps`)
 
