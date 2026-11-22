@@ -44,10 +44,19 @@ Si entre los dos pasos hay menos de unos 4° de diferencia aparece "ERROR – Po
 
 Las páginas de la placa y la del mapa se explican en [WEB.md](WEB.md). Para entrar desde el móvil:
 
-1. Conéctate a la WiFi **`MotoLean`** (clave `moto1234`).
-2. Abre <http://192.168.4.1> en el navegador.
+1. Conéctate a la WiFi **`MotoLean`**. La clave de fábrica es `moto1234`.
+2. Abre <http://192.168.4.1> en el navegador. Pide usuario y clave: el usuario es **`moto`** y la clave, la misma de la WiFi.
+3. La primera vez, la web solo deja **cambiar la clave**. La de fábrica la conoce cualquiera, así que hasta cambiarla no se puede usar nada más. Al guardarla, la placa se reinicia y hay que volver a conectarse con la clave nueva.
 
-La página muestra los mismos datos en directo y tiene un botón para borrar los máximos. El nombre y la clave de la WiFi se cambian al principio del código (`WIFI_NOMBRE`, `WIFI_CLAVE`).
+La página muestra los mismos datos en directo y tiene un botón para borrar los máximos.
+
+### Si olvidas la clave
+
+1. Enciende la placa.
+2. En cuanto se ilumine la pantalla (pone «Arrancando...»), mantén pulsado el botón **BOOT** (placa 1,69") o **AZUL** (placa LOLIN) durante 3 s.
+3. La pantalla muestra «CLAVE WIFI de fábrica: moto1234». Suelta el botón.
+
+No lo pulses antes de encender: con ese botón pulsado al dar corriente, la placa entra en modo de carga de firmware y la pantalla se queda apagada.
 
 ## Qué se guarda
 
